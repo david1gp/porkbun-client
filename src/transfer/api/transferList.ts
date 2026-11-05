@@ -1,0 +1,11 @@
+import type { PromiseResult } from "#result"
+import type { PorkbunClient } from "../../shared/PorkbunClient.js"
+import type { PorkbunRequestOptions } from "../../shared/PorkbunRequestOptions.js"
+import { porkbunEndpointCall } from "../../shared/porkbunEndpointCall.js"
+import { type TransferListResponse, transferListEndpoint } from "../endpoint/transferListEndpoint.js"
+export function transferList(
+  client: PorkbunClient,
+  options?: PorkbunRequestOptions,
+): PromiseResult<TransferListResponse> {
+  return porkbunEndpointCall(client, transferListEndpoint, {}, options)
+}
