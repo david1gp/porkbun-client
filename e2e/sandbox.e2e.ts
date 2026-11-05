@@ -3,17 +3,10 @@ import * as a from "valibot"
 import { sandboxResetEndpoint } from "../src/sandbox/endpoint/sandboxResetEndpoint.js"
 import { sandboxTopupEndpoint } from "../src/sandbox/endpoint/sandboxTopupEndpoint.js"
 import { sandboxWebhookTriggerEndpoint } from "../src/sandbox/endpoint/sandboxWebhookTriggerEndpoint.js"
-import { porkbunClientCreate } from "../src/shared/porkbunClientCreate.js"
 import { porkbunEndpointCall } from "../src/shared/porkbunEndpointCall.js"
-import { porkbunMockBaseUrl } from "../src/shared/porkbunMockBaseUrl.js"
-import { accountRetryFetch } from "./accountRetryFetch.js"
+import { porkbunE2eClientCreate } from "./porkbunE2eClientCreate.js"
 
-const clientResult = porkbunClientCreate({
-  fetch: accountRetryFetch,
-  baseUrl: porkbunMockBaseUrl,
-  apiKey: "pk1_mock",
-  secretApiKey: "sk1_mock",
-})
+const clientResult = porkbunE2eClientCreate()
 if (!clientResult.success) throw new Error(clientResult.errorMessage)
 const client = clientResult.data
 

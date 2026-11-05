@@ -6,7 +6,7 @@
     "check": "bun tsc --noEmit",
     "format": "biome format --write src package.json tsconfig.json tsconfig.lib.json biome.json",
     "test": "bun test src",
-    "test:e2e": "bun run build && bun test ./e2e/*.e2e.ts",
+    "test:e2e": "bun test ./e2e/*.e2e.ts",
     "test:w": "bun test --watch",
     "release": "bash ./ops/release.sh",
     "update": "bun update",
@@ -35,7 +35,7 @@
   },
   "private": false,
   "license": "MIT",
-  "description": "Fully typed, Result-based TypeScript client and CLI for the Porkbun API v3 (domains, DNS, SSL, email, hosting, webhooks, Cloudflare, …).",
+  "description": "Fully typed, Result-based TypeScript client and CLI for the Porkbun API v3 (domains, DNS, SSL, email, hosting, webhooks, Cloudflare, \u2026).",
   "keywords": [
     "porkbun",
     "dns",
@@ -80,5 +80,6 @@
   },
   "engines": {
     "node": ">=22"
-  }
+  },
+  "sideEffects": false
 }

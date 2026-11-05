@@ -11,7 +11,11 @@ export const sandboxTopupEndpoint = porkbunEndpointDefine({
   scope: "account",
   agent: { safe: false, cost: false, destructive: false, reversible: true, requiresConfirmation: false },
   brief: "Sandbox: add fake credit",
-  inputSchema: a.object({}),
+  inputSchema: a.object({
+    amount: a.optional(
+      a.pipe(a.number(), a.integer(), a.description("Fake credit to add in US cents (default 100000; max 1000000)")),
+    ),
+  }),
   responseSchema: a.looseObject({
     status: a.optional(a.string()),
     granted: a.optional(a.pipe(a.number(), a.integer())),

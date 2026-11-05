@@ -1,7 +1,5 @@
 import { expect, test } from "bun:test"
 import * as a from "valibot"
-import { porkbunClientCreate } from "../src/shared/porkbunClientCreate.js"
-import { porkbunMockBaseUrl } from "../src/shared/porkbunMockBaseUrl.js"
 import { transferAuthCodeUpdate } from "../src/transfer/api/transferAuthCodeUpdate.js"
 import { transferCancel } from "../src/transfer/api/transferCancel.js"
 import { transferCreate } from "../src/transfer/api/transferCreate.js"
@@ -18,14 +16,9 @@ import { transferListEndpoint } from "../src/transfer/endpoint/transferListEndpo
 import { transferPrepareEndpoint } from "../src/transfer/endpoint/transferPrepareEndpoint.js"
 import { transferSetupGetEndpoint } from "../src/transfer/endpoint/transferSetupGetEndpoint.js"
 import { transferStartEndpoint } from "../src/transfer/endpoint/transferStartEndpoint.js"
-import { accountRetryFetch } from "./accountRetryFetch.js"
+import { porkbunE2eClientCreate } from "./porkbunE2eClientCreate.js"
 
-const created = porkbunClientCreate({
-  fetch: accountRetryFetch,
-  baseUrl: porkbunMockBaseUrl,
-  apiKey: "pk1_mock",
-  secretApiKey: "sk1_mock",
-})
+const created = porkbunE2eClientCreate()
 if (!created.success) throw new Error(created.errorMessage)
 const client = created.data
 test("live mock validates transferCreate", async () => {

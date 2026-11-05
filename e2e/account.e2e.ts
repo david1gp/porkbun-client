@@ -17,17 +17,10 @@ import { accountTopupCryptoEndpoint } from "../src/account/endpoint/accountTopup
 import { accountTopupCryptoStatusGetEndpoint } from "../src/account/endpoint/accountTopupCryptoStatusGetEndpoint.js"
 import { accountTopupEndpoint } from "../src/account/endpoint/accountTopupEndpoint.js"
 import { accountTopupMppEndpoint } from "../src/account/endpoint/accountTopupMppEndpoint.js"
-import { porkbunClientCreate } from "../src/shared/porkbunClientCreate.js"
 import { porkbunEndpointCall } from "../src/shared/porkbunEndpointCall.js"
-import { porkbunMockBaseUrl } from "../src/shared/porkbunMockBaseUrl.js"
-import { accountRetryFetch } from "./accountRetryFetch.js"
+import { porkbunE2eClientCreate } from "./porkbunE2eClientCreate.js"
 
-const clientResult = porkbunClientCreate({
-  fetch: accountRetryFetch,
-  baseUrl: porkbunMockBaseUrl,
-  apiKey: "pk1_mock",
-  secretApiKey: "sk1_mock",
-})
+const clientResult = porkbunE2eClientCreate()
 if (!clientResult.success) throw new Error(clientResult.errorMessage)
 const client = clientResult.data
 

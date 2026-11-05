@@ -5,9 +5,8 @@ import { closeoutGetEndpoint } from "../src/market/endpoint/closeoutGetEndpoint.
 import { closeoutSearchEndpoint } from "../src/market/endpoint/closeoutSearchEndpoint.js"
 import { marketplaceListEndpoint } from "../src/market/endpoint/marketplaceListEndpoint.js"
 import type { PorkbunEndpoint } from "../src/shared/PorkbunEndpoint.js"
-import { porkbunClientCreate } from "../src/shared/porkbunClientCreate.js"
 import { porkbunEndpointCall } from "../src/shared/porkbunEndpointCall.js"
-import { porkbunMockBaseUrl } from "../src/shared/porkbunMockBaseUrl.js"
+import { porkbunE2eClientCreate } from "./porkbunE2eClientCreate.js"
 
 const cases: { endpoint: PorkbunEndpoint; input: Record<string, unknown> }[] = [
   { endpoint: marketplaceListEndpoint, input: {} },
@@ -18,7 +17,7 @@ const cases: { endpoint: PorkbunEndpoint; input: Record<string, unknown> }[] = [
 ]
 for (const { endpoint, input } of cases) {
   test(`live mock validates ${endpoint.op}`, async () => {
-    const client = porkbunClientCreate({ baseUrl: porkbunMockBaseUrl, apiKey: "pk1_mock", secretApiKey: "sk1_mock" })
+    const client = porkbunE2eClientCreate()
     if (!client.success) throw new Error(client.errorMessage)
     const result = await porkbunEndpointCall(client.data, endpoint, input, { signal: AbortSignal.timeout(30000) })
     if (!result.success) console.error(endpoint.op, result)

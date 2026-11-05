@@ -1,21 +1,14 @@
 import { expect, test } from "bun:test"
 import * as a from "valibot"
-import { porkbunClientCreate } from "../src/shared/porkbunClientCreate.js"
-import { porkbunMockBaseUrl } from "../src/shared/porkbunMockBaseUrl.js"
 import { urlForwardCreate } from "../src/urlForward/api/urlForwardCreate.js"
 import { urlForwardDelete } from "../src/urlForward/api/urlForwardDelete.js"
 import { urlForwardList } from "../src/urlForward/api/urlForwardList.js"
 import { urlForwardCreateEndpoint } from "../src/urlForward/endpoint/urlForwardCreateEndpoint.js"
 import { urlForwardDeleteEndpoint } from "../src/urlForward/endpoint/urlForwardDeleteEndpoint.js"
 import { urlForwardListEndpoint } from "../src/urlForward/endpoint/urlForwardListEndpoint.js"
-import { accountRetryFetch } from "./accountRetryFetch.js"
+import { porkbunE2eClientCreate } from "./porkbunE2eClientCreate.js"
 
-const created = porkbunClientCreate({
-  fetch: accountRetryFetch,
-  baseUrl: porkbunMockBaseUrl,
-  apiKey: "pk1_mock",
-  secretApiKey: "sk1_mock",
-})
+const created = porkbunE2eClientCreate()
 if (!created.success) throw new Error(created.errorMessage)
 const client = created.data
 test("live mock validates urlForwardList", async () => {

@@ -5,13 +5,17 @@ import { porkbunMockBaseUrl } from "../src/shared/porkbunMockBaseUrl.js"
 
 /** Test-only retries. Production clients deliberately never retry writes automatically. */
 export function porkbunE2eClientCreate(
-  options: { fetch?: PorkbunFetch; sleep?: (milliseconds: number, signal?: AbortSignal | null) => Promise<void> } = {},
+  options: {
+    baseUrl?: string
+    fetch?: PorkbunFetch
+    sleep?: (milliseconds: number, signal?: AbortSignal | null) => Promise<void>
+  } = {},
 ) {
   const fetch = options.fetch ?? globalThis.fetch
   const sleep =
     options.sleep ?? ((milliseconds, signal) => setTimeout(milliseconds, undefined, { signal: signal ?? undefined }))
   return porkbunClientCreate({
-    baseUrl: porkbunMockBaseUrl,
+    baseUrl: options.baseUrl ?? porkbunMockBaseUrl,
     apiKey: "pk1_mock",
     secretApiKey: "sk1_mock",
     fetch: async (url, init) => {

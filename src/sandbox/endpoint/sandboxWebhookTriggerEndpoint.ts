@@ -11,7 +11,21 @@ export const sandboxWebhookTriggerEndpoint = porkbunEndpointDefine({
   scope: "account",
   agent: { safe: false, cost: false, destructive: false, reversible: true, requiresConfirmation: false },
   brief: "Sandbox: fire a sample webhook event",
-  inputSchema: a.object({}),
+  inputSchema: a.object({
+    eventType: a.pipe(
+      a.picklist([
+        "domain.registered",
+        "domain.renewed",
+        "domain.transfer.completed",
+        "domain.expiring",
+        "dns.record.created",
+        "dns.record.updated",
+        "dns.record.deleted",
+      ]),
+      a.description("Event type to emit"),
+    ),
+    domain: a.optional(a.pipe(a.string(), a.description("Domain used in the sample payload (default example.com)"))),
+  }),
   responseSchema: a.looseObject({
     status: a.optional(a.string()),
     event: a.optional(a.string()),
