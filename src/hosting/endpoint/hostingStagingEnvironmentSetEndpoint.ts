@@ -11,6 +11,8 @@ export const hostingStagingEnvironmentSetEndpoint = porkbunEndpointDefine({
   agent: { safe: false, cost: false, destructive: false, reversible: true, requiresConfirmation: true },
   brief: "Set the staging environment type",
   inputSchema: a.object({
+    // Supported in the operation description, omitted from its request property list.
+    dryRun: a.optional(a.pipe(a.boolean(), a.description("Validate without making changes"))),
     type: a.pipe(a.picklist(["staging", "production"]), a.description("type")),
     domain: a.pipe(a.string(), a.description("domain")),
   }),

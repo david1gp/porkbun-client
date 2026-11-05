@@ -12,6 +12,8 @@ export const hostingStagingCreateEndpoint = porkbunEndpointDefine({
   agent: { safe: false, cost: false, destructive: false, reversible: true, requiresConfirmation: false },
   brief: "Create a staging site",
   inputSchema: a.object({
+    // Supported in the operation description, omitted from its request property list.
+    dryRun: a.optional(a.pipe(a.boolean(), a.description("Validate without making changes"))),
     fsId: a.optional(
       a.pipe(a.string(), a.description("Optional: build from this files backup of the live site (with dbId).")),
     ),

@@ -11,6 +11,8 @@ export const hostingBackupCreateEndpoint = porkbunEndpointDefine({
   agent: { safe: false, cost: false, destructive: false, reversible: true, requiresConfirmation: false },
   brief: "Take an on-demand backup",
   inputSchema: a.object({
+    // Supported in the operation description, omitted from its request property list.
+    dryRun: a.optional(a.pipe(a.boolean(), a.description("Validate without making changes"))),
     staging: a.optional(
       a.pipe(a.boolean(), a.description("true: act on the site's staging copy instead of the live site.")),
     ),

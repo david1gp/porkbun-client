@@ -9,7 +9,7 @@ test("collects directories recursively and maps individual remote paths", async 
   try {
     await mkdir(join(dir, "css"))
     await writeFile(join(dir, "css", "site.css"), "body{}")
-    const result = await hostingFileCollect({ dir, file: [join(dir, "css", "site.css") + "=other.css"] })
+    const result = await hostingFileCollect({ dir, file: [`${join(dir, "css", "site.css")}=other.css`] })
     expect(result.success).toBe(true)
     if (result.success)
       expect(result.data).toEqual([
@@ -31,6 +31,8 @@ test("skips hidden entries recursively unless explicitly included", async () => 
     await writeFile(join(dir, "index.html"), "ok")
     const normal = await hostingFileCollect({ dir })
     expect(normal.success && normal.data.map((file) => file.path)).toEqual(["index.html"])
+    const explicit = await hostingFileCollect({ file: [join(dir, ".hidden"), `${join(dir, ".git", "config")}=config`] })
+    expect(explicit.success && explicit.data.map((file) => file.path)).toEqual([".hidden", "config"])
     const all = await hostingFileCollect({ dir, includeHidden: true })
     expect(all.success && all.data.map((file) => file.path).sort()).toEqual([".git/config", ".hidden", "index.html"])
   } finally {

@@ -1,5 +1,6 @@
 import { createResult, createResultError, type PromiseResult } from "#result"
 import type { PorkbunClient } from "../../shared/PorkbunClient.js"
+import type { PorkbunRequestOptions } from "../../shared/PorkbunRequestOptions.js"
 import type { HostingFileDeployInput, HostingFileDeployResponse } from "../endpoint/hostingFileDeployEndpoint.js"
 import { hostingFileDeploy } from "./hostingFileDeploy.js"
 
@@ -7,6 +8,7 @@ import { hostingFileDeploy } from "./hostingFileDeploy.js"
 export async function hostingFileDeployBatched(
   client: PorkbunClient,
   input: HostingFileDeployInput,
+  options?: PorkbunRequestOptions,
 ): PromiseResult<HostingFileDeployResponse> {
   const batches: HostingFileDeployInput["files"][] = []
   let batch: HostingFileDeployInput["files"] = []
@@ -28,7 +30,14 @@ export async function hostingFileDeployBatched(
   const deployed: string[] = []
   const skipped: NonNullable<HostingFileDeployResponse["skipped"]> = []
   for (const [index, files] of batches.entries()) {
-    const result = await hostingFileDeploy(client, { domain: input.domain, files })
+    // Different payloads must never share an idempotency key. Stable suffixes
+    // make a repeated batched deployment safe while preserving the first key.
+    const idempotencyKey = options?.idempotencyKey
+      ? index === 0
+        ? options.idempotencyKey
+        : `${options.idempotencyKey}:${index + 1}`
+      : undefined
+    const result = await hostingFileDeploy(client, { domain: input.domain, files }, { ...options, idempotencyKey })
     if (!result.success)
       return {
         ...result,

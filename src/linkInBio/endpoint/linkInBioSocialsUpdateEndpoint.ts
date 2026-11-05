@@ -13,6 +13,8 @@ export const linkInBioSocialsUpdateEndpoint = porkbunEndpointDefine({
   agent: { safe: false, cost: false, destructive: false, reversible: true, requiresConfirmation: false },
   brief: "Update social icons",
   inputSchema: a.object({
+    // Supported by the operation prose, though absent from requestBody properties.
+    dryRun: a.optional(a.pipe(a.boolean(), a.description("Validate without saving changes"))),
     domain: a.pipe(a.string(), a.description("domain")),
     location: a.optional(a.pipe(a.picklist(["top", "bottom"]), a.description("location"))),
     socials: a.optional(a.pipe(a.record(a.string(), a.nullable(a.string())), a.description("socials"))),

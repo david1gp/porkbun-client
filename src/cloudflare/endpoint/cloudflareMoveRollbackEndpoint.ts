@@ -5,6 +5,8 @@ import { porkbunEndpointDefine } from "../../shared/porkbunEndpointDefine.js"
 
 import { cloudflareMoveStatusSchema } from "../schema/cloudflareMoveStatusSchema.js"
 
+import { cloudflareWriteResponseSchemaCreate } from "../schema/cloudflareWriteResponseSchemaCreate.js"
+
 export const cloudflareMoveRollbackEndpoint = porkbunEndpointDefine({
   op: "cloudflareMoveRollback",
   method: "POST",
@@ -13,14 +15,14 @@ export const cloudflareMoveRollbackEndpoint = porkbunEndpointDefine({
   scope: "domains",
   agent: { safe: false, cost: false, destructive: false, reversible: true, requiresConfirmation: true },
   brief: "Undo a completed move (restore Porkbun nameservers)",
+  // dryRun is documented in the operation prose, but missing from requestBody.
   inputSchema: a.object({
     dryRun: a.optional(a.pipe(a.boolean(), a.description("Validate without making changes"))),
     domain: a.pipe(a.string(), a.description("domain")),
   }),
-  responseSchema: a.looseObject({
+  responseSchema: cloudflareWriteResponseSchemaCreate({
     ...cloudflareMoveStatusSchema.entries,
     move: a.optional(cloudflareMoveStatusSchema),
-    dryRun: a.optional(a.boolean()),
   }),
 })
 export type CloudflareMoveRollbackInput = PorkbunEndpointInput<typeof cloudflareMoveRollbackEndpoint>

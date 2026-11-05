@@ -27,6 +27,9 @@ export async function hostingFileCollect(input: {
       }
     }
     if (input.dir) await walk(input.dir, input.dir)
+    // Hidden-name filtering applies only to implicit directory discovery. An
+    // explicit --file path (including .hidden or .git/config) is intentional
+    // and is uploaded without requiring --include-hidden; raw --files is too.
     for (const item of input.file ?? []) {
       const index = item.indexOf("=")
       const local = index < 0 ? item : item.slice(0, index)

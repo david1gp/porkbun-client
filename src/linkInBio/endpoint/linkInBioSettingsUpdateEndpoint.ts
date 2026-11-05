@@ -13,6 +13,8 @@ export const linkInBioSettingsUpdateEndpoint = porkbunEndpointDefine({
   agent: { safe: false, cost: false, destructive: false, reversible: true, requiresConfirmation: false },
   brief: "Update page settings",
   inputSchema: a.object({
+    // Supported by the operation prose, though absent from requestBody properties.
+    dryRun: a.optional(a.pipe(a.boolean(), a.description("Validate without saving changes"))),
     domain: a.pipe(a.string(), a.description("domain")),
     sensitiveContent: a.optional(
       a.pipe(a.nullable(a.picklist(["generic", "18", "21", "25"])), a.description("sensitiveContent")),

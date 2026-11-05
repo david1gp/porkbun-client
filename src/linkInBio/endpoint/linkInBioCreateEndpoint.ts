@@ -13,6 +13,8 @@ export const linkInBioCreateEndpoint = porkbunEndpointDefine({
   agent: { safe: false, cost: false, destructive: false, reversible: true, requiresConfirmation: false },
   brief: "Turn on a free Link in Bio page",
   inputSchema: a.object({
+    // Supported by the operation prose, though absent from requestBody properties.
+    dryRun: a.optional(a.pipe(a.boolean(), a.description("Validate without saving changes"))),
     domain: a.pipe(a.string(), a.description("domain")),
     agreeToNameserverChange: a.optional(
       a.pipe(a.boolean(), a.description("Required when the domain is not on Porkbun nameservers.")),

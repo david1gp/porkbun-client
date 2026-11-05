@@ -11,6 +11,8 @@ export const hostingWordPressVersionSetEndpoint = porkbunEndpointDefine({
   agent: { safe: false, cost: false, destructive: false, reversible: true, requiresConfirmation: true },
   brief: "Set the WordPress version",
   inputSchema: a.object({
+    // Supported in the operation description, omitted from its request property list.
+    dryRun: a.optional(a.pipe(a.boolean(), a.description("Validate without making changes"))),
     version: a.pipe(a.picklist(["latest", "previous"]), a.description("version")),
     domain: a.pipe(a.string(), a.description("domain")),
   }),

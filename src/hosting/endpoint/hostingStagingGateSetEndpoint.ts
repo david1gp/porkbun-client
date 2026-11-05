@@ -11,6 +11,8 @@ export const hostingStagingGateSetEndpoint = porkbunEndpointDefine({
   agent: { safe: false, cost: false, destructive: false, reversible: true, requiresConfirmation: true },
   brief: "Set staging password protection",
   inputSchema: a.object({
+    // Supported in the operation description, omitted from its request property list.
+    dryRun: a.optional(a.pipe(a.boolean(), a.description("Validate without making changes"))),
     enabled: a.optional(a.pipe(a.boolean(), a.description("enabled"))),
     password: a.optional(a.pipe(a.string(), a.description("4-64 characters."))),
     domain: a.pipe(a.string(), a.description("domain")),

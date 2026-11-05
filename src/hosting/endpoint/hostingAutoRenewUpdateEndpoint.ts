@@ -11,6 +11,8 @@ export const hostingAutoRenewUpdateEndpoint = porkbunEndpointDefine({
   agent: { safe: false, cost: false, destructive: false, reversible: true, requiresConfirmation: true },
   brief: "Turn hosting auto-renew on or off",
   inputSchema: a.object({
+    // Supported in the operation description, omitted from its request property list.
+    dryRun: a.optional(a.pipe(a.boolean(), a.description("Validate without making changes"))),
     autoRenew: a.pipe(
       a.boolean(),
       a.description("true to renew automatically, false to let the plan end at expireDate."),

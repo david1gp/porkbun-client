@@ -14,6 +14,8 @@ export const linkInBioLinkCreateEndpoint = porkbunEndpointDefine({
   agent: { safe: false, cost: false, destructive: false, reversible: true, requiresConfirmation: false },
   brief: "Add a link",
   inputSchema: a.object({
+    // Supported by the operation prose, though absent from requestBody properties.
+    dryRun: a.optional(a.pipe(a.boolean(), a.description("Validate without saving changes"))),
     domain: a.pipe(a.string(), a.description("domain")),
     ...linkInBioLinkInputSchema.entries,
     position: a.optional(a.pipe(a.picklist(["bottom", "top"]), a.description("position"))),

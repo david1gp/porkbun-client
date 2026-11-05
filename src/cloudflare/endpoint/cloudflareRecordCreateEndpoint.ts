@@ -6,6 +6,8 @@ import { porkbunEndpointDefine } from "../../shared/porkbunEndpointDefine.js"
 import { cloudflareRecordInputSchema } from "../schema/cloudflareRecordInputSchema.js"
 import { cloudflareRecordSchema } from "../schema/cloudflareRecordSchema.js"
 
+import { cloudflareWriteResponseSchemaCreate } from "../schema/cloudflareWriteResponseSchemaCreate.js"
+
 export const cloudflareRecordCreateEndpoint = porkbunEndpointDefine({
   op: "cloudflareRecordCreate",
   method: "POST",
@@ -19,7 +21,7 @@ export const cloudflareRecordCreateEndpoint = porkbunEndpointDefine({
     ...cloudflareRecordInputSchema.entries,
     dryRun: a.optional(a.pipe(a.boolean(), a.description("dryRun"))),
   }),
-  responseSchema: a.looseObject({
+  responseSchema: cloudflareWriteResponseSchemaCreate({
     status: a.optional(a.string()),
     message: a.optional(a.string()),
     record: a.optional(cloudflareRecordSchema),

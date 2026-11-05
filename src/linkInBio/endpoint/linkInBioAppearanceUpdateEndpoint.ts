@@ -13,6 +13,8 @@ export const linkInBioAppearanceUpdateEndpoint = porkbunEndpointDefine({
   agent: { safe: false, cost: false, destructive: false, reversible: true, requiresConfirmation: false },
   brief: "Update the page appearance",
   inputSchema: a.object({
+    // Supported by the operation prose, though absent from requestBody properties.
+    dryRun: a.optional(a.pipe(a.boolean(), a.description("Validate without saving changes"))),
     domain: a.pipe(a.string(), a.description("domain")),
     preset: a.optional(
       a.pipe(a.picklist(["classic", "ocean", "midnight", "paper", "forest", "sunset"]), a.description("preset")),

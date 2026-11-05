@@ -10,7 +10,11 @@ export const hostingSslReissueEndpoint = porkbunEndpointDefine({
   scope: "hosting",
   agent: { safe: false, cost: false, destructive: false, reversible: true, requiresConfirmation: false },
   brief: "Restart SSL issuance",
-  inputSchema: a.object({ domain: a.pipe(a.string(), a.description("domain")) }),
+  inputSchema: a.object({
+    // Supported in the operation description, omitted from its request property list.
+    dryRun: a.optional(a.pipe(a.boolean(), a.description("Validate without making changes"))),
+    domain: a.pipe(a.string(), a.description("domain")),
+  }),
   responseSchema: a.looseObject({
     status: a.optional(a.string()),
     domain: a.optional(a.string()),

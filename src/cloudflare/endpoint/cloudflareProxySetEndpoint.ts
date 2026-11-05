@@ -5,6 +5,8 @@ import { porkbunEndpointDefine } from "../../shared/porkbunEndpointDefine.js"
 
 import { cloudflareRecordSchema } from "../schema/cloudflareRecordSchema.js"
 
+import { cloudflareWriteResponseSchemaCreate } from "../schema/cloudflareWriteResponseSchemaCreate.js"
+
 export const cloudflareProxySetEndpoint = porkbunEndpointDefine({
   op: "cloudflareProxySet",
   method: "POST",
@@ -27,13 +29,13 @@ export const cloudflareProxySetEndpoint = porkbunEndpointDefine({
     ),
     dryRun: a.optional(a.pipe(a.boolean(), a.description("dryRun"))),
   }),
-  responseSchema: a.looseObject({
+  responseSchema: cloudflareWriteResponseSchemaCreate({
     status: a.optional(a.string()),
     message: a.optional(a.string()),
+    applied: a.optional(a.array(cloudflareRecordSchema)),
     updated: a.optional(a.array(cloudflareRecordSchema)),
     skipped: a.optional(a.array(cloudflareRecordSchema)),
     warnings: a.optional(a.array(a.string())),
-    dryRun: a.optional(a.boolean()),
   }),
 })
 export type CloudflareProxySetInput = PorkbunEndpointInput<typeof cloudflareProxySetEndpoint>

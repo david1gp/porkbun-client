@@ -11,6 +11,8 @@ export const hostingStagingGuardSetEndpoint = porkbunEndpointDefine({
   agent: { safe: false, cost: false, destructive: false, reversible: true, requiresConfirmation: true },
   brief: "Block or allow outbound email and API calls from staging",
   inputSchema: a.object({
+    // Supported in the operation description, omitted from its request property list.
+    dryRun: a.optional(a.pipe(a.boolean(), a.description("Validate without making changes"))),
     blockEmail: a.optional(a.pipe(a.boolean(), a.description("blockEmail"))),
     blockApiRequests: a.optional(a.pipe(a.boolean(), a.description("blockApiRequests"))),
     domain: a.pipe(a.string(), a.description("domain")),

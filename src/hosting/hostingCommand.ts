@@ -1,5 +1,6 @@
 import { buildRouteMap } from "@stricli/core"
 import { cliEndpointCommandCreate } from "../cli/cliEndpointCommandCreate.js"
+import { cliOptionCreate } from "../cli/cliOptionCreate.js"
 import { hostingAutoRenewUpdateEndpoint } from "./endpoint/hostingAutoRenewUpdateEndpoint.js"
 import { hostingBackupCreateEndpoint } from "./endpoint/hostingBackupCreateEndpoint.js"
 import { hostingBackupDeleteEndpoint } from "./endpoint/hostingBackupDeleteEndpoint.js"
@@ -31,7 +32,12 @@ import { hostingFileDeployCommand } from "./hostingFileDeployCommand.js"
 export const hostingCommand = buildRouteMap({
   routes: {
     planList: cliEndpointCommandCreate(hostingPlanListEndpoint),
-    create: cliEndpointCommandCreate(hostingCreateEndpoint),
+    create: cliEndpointCommandCreate(hostingCreateEndpoint, {
+      // The SKU union is a scalar, not JSON; validate the raw CLI string.
+      extraFlags: {
+        sku: cliOptionCreate(hostingCreateEndpoint.inputSchema.entries.sku, "Provisionable SKU from hosting plan-list"),
+      },
+    }),
     get: cliEndpointCommandCreate(hostingGetEndpoint),
     delete: cliEndpointCommandCreate(hostingDeleteEndpoint),
     autoRenewUpdate: cliEndpointCommandCreate(hostingAutoRenewUpdateEndpoint),

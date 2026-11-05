@@ -15,6 +15,7 @@ type Flags = CliClientInput & {
   dir?: string
   file?: string[]
   files?: { path?: string; content?: string }[]
+  idempotencyKey?: string
   includeHidden?: boolean
   yes?: boolean
 }
@@ -39,7 +40,11 @@ export const hostingFileDeployCommand = buildCommand({
     }
     cliResultWrite(
       this.process,
-      await hostingFileDeployBatched(client.data, { domain: flags.domain, files: files.data }),
+      await hostingFileDeployBatched(
+        client.data,
+        { domain: flags.domain, files: files.data },
+        { idempotencyKey: flags.idempotencyKey },
+      ),
     )
   },
   parameters: {
@@ -53,6 +58,9 @@ export const hostingFileDeployCommand = buildCommand({
         "Raw JSON file array",
         { optional: true },
       ),
+      idempotencyKey: cliOptionCreate(a.string(), "Stable retry key (later batches append :2, :3, …)", {
+        optional: true,
+      }),
       includeHidden: { kind: "boolean", optional: true, brief: "Include hidden files and directories" },
       yes: { kind: "boolean", optional: true, brief: "Confirm destructive operation" },
     },

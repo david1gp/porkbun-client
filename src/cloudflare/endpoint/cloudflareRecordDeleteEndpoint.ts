@@ -5,6 +5,8 @@ import { porkbunEndpointDefine } from "../../shared/porkbunEndpointDefine.js"
 
 import { cloudflareRecordSchema } from "../schema/cloudflareRecordSchema.js"
 
+import { cloudflareWriteResponseSchemaCreate } from "../schema/cloudflareWriteResponseSchemaCreate.js"
+
 export const cloudflareRecordDeleteEndpoint = porkbunEndpointDefine({
   op: "cloudflareRecordDelete",
   method: "POST",
@@ -18,7 +20,7 @@ export const cloudflareRecordDeleteEndpoint = porkbunEndpointDefine({
     recordId: a.pipe(a.string(), a.description("Cloudflare record id from /cloudflare/getRecords.")),
     dryRun: a.optional(a.pipe(a.boolean(), a.description("dryRun"))),
   }),
-  responseSchema: a.looseObject({
+  responseSchema: cloudflareWriteResponseSchemaCreate({
     status: a.optional(a.string()),
     message: a.optional(a.string()),
     record: a.optional(cloudflareRecordSchema),

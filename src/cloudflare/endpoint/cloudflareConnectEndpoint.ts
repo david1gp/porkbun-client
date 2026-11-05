@@ -3,7 +3,9 @@ import type { PorkbunEndpointInput } from "../../shared/PorkbunEndpointInput.js"
 import type { PorkbunEndpointOutput } from "../../shared/PorkbunEndpointOutput.js"
 import { porkbunEndpointDefine } from "../../shared/porkbunEndpointDefine.js"
 
-import { cloudflareMoveStatusSchema } from "../schema/cloudflareMoveStatusSchema.js"
+import { cloudflareMoveResultsSchema } from "../schema/cloudflareMoveResultsSchema.js"
+
+import { cloudflareWriteResponseSchemaCreate } from "../schema/cloudflareWriteResponseSchemaCreate.js"
 
 export const cloudflareConnectEndpoint = porkbunEndpointDefine({
   op: "cloudflareConnect",
@@ -20,13 +22,13 @@ export const cloudflareConnectEndpoint = porkbunEndpointDefine({
     ),
     dryRun: a.optional(a.pipe(a.boolean(), a.description("Validate and return per-domain verdicts without queueing."))),
   }),
-  responseSchema: a.looseObject({
+  responseSchema: cloudflareWriteResponseSchemaCreate({
     status: a.optional(a.string()),
     message: a.optional(a.string()),
-    queued: a.optional(a.array(a.union([a.string(), cloudflareMoveStatusSchema]))),
-    skipped: a.optional(a.array(a.union([a.string(), cloudflareMoveStatusSchema]))),
-    alreadyQueued: a.optional(a.array(a.union([a.string(), cloudflareMoveStatusSchema]))),
-    dryRun: a.optional(a.boolean()),
+    queued: a.optional(cloudflareMoveResultsSchema),
+    skipped: a.optional(cloudflareMoveResultsSchema),
+    alreadyQueued: a.optional(cloudflareMoveResultsSchema),
+    summary: a.optional(a.record(a.string(), a.number())),
   }),
 })
 export type CloudflareConnectInput = PorkbunEndpointInput<typeof cloudflareConnectEndpoint>
