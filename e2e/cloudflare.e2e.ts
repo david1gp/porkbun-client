@@ -17,26 +17,13 @@ import { cloudflareRecordListEndpoint } from "../src/cloudflare/endpoint/cloudfl
 import { cloudflareZoneGetEndpoint } from "../src/cloudflare/endpoint/cloudflareZoneGetEndpoint.js"
 import { cloudflareZoneSettingsGetEndpoint } from "../src/cloudflare/endpoint/cloudflareZoneSettingsGetEndpoint.js"
 import { cloudflareZoneSettingsSetEndpoint } from "../src/cloudflare/endpoint/cloudflareZoneSettingsSetEndpoint.js"
-import { porkbunClientCreate } from "../src/shared/porkbunClientCreate.js"
 import { porkbunEndpointCall } from "../src/shared/porkbunEndpointCall.js"
-import { porkbunMockBaseUrl } from "../src/shared/porkbunMockBaseUrl.js"
+import { porkbunE2eClientCreate } from "./porkbunE2eClientCreate.js"
 
-const retryFetch: typeof fetch = async (input, init) => {
-  for (let attempt = 0; ; attempt++) {
-    const response = await fetch(input, init)
-    if (attempt >= 4 || ![429, 502, 503, 504].includes(response.status)) return response
-    await response.body?.cancel()
-    await Bun.sleep(250 * 2 ** attempt)
-  }
-}
-const result = porkbunClientCreate({
-  baseUrl: porkbunMockBaseUrl,
-  apiKey: "pk1_mock",
-  secretApiKey: "sk1_mock",
-  fetch: retryFetch,
-})
-if (!result.success) throw new Error(result.errorMessage)
-const client = result.data
+const clientResult = porkbunE2eClientCreate()
+if (!clientResult.success) throw new Error(clientResult.errorMessage)
+const client = clientResult.data
+
 test("mock cloudflareConnectEndpoint", async () => {
   const result = await porkbunEndpointCall(
     client,

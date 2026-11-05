@@ -56,24 +56,12 @@ import { hostingWordPressVersionSetEndpoint } from "../src/hosting/endpoint/host
 import { hostingWpCredentialCreateEndpoint } from "../src/hosting/endpoint/hostingWpCredentialCreateEndpoint.js"
 import { hostingWpCredentialDeleteEndpoint } from "../src/hosting/endpoint/hostingWpCredentialDeleteEndpoint.js"
 import { hostingWpCredentialListEndpoint } from "../src/hosting/endpoint/hostingWpCredentialListEndpoint.js"
-import { porkbunClientCreate } from "../src/shared/porkbunClientCreate.js"
-import { porkbunMockBaseUrl } from "../src/shared/porkbunMockBaseUrl.js"
+import { porkbunE2eClientCreate } from "./porkbunE2eClientCreate.js"
 
-const clientResult = porkbunClientCreate({
-  baseUrl: porkbunMockBaseUrl,
-  apiKey: "pk1_mock",
-  secretApiKey: "sk1_mock",
-  fetch: async (input, init) => {
-    for (let attempt = 0; ; attempt++) {
-      const response = await fetch(input, init)
-      if (![429, 502, 503, 504].includes(response.status) || attempt >= 4) return response
-      await response.body?.cancel()
-      await Bun.sleep(250 * 2 ** attempt)
-    }
-  },
-})
+const clientResult = porkbunE2eClientCreate()
 if (!clientResult.success) throw new Error(clientResult.errorMessage)
 const client = clientResult.data
+
 test("mock hostingPlanList", async () => {
   const result = await hostingPlanList(client)
   expect(result.success).toBe(true)
