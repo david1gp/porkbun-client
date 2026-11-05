@@ -1,0 +1,680 @@
+## POST /ping [ping] scope=read agent={"safe":true,"cost":false,"destructive":false,"reversible":true,"requiresConfirmation":false}
+  params: 
+  body: {}
+  200: {status:string, yourIp:string, xForwardedFor?:string} & {credentialsValid?:boolean, account?:string, scopes?:string[]}
+## GET /ping [pingGet] scope=read agent={"safe":true,"cost":false,"destructive":false,"reversible":true,"requiresConfirmation":false}
+  params: 
+  body: 
+  200: {status:string, yourIp:string, xForwardedFor?:string} & {credentialsValid?:boolean, account?:string, scopes?:string[]}
+## POST /ip [ipPost] scope=read agent={"safe":true,"cost":false,"destructive":false,"reversible":true,"requiresConfirmation":false}
+  params: 
+  body: {}
+  200: {status:string, yourIp:string, xForwardedFor?:string}
+## GET /ip [getIp] scope=read agent={"safe":true,"cost":false,"destructive":false,"reversible":true,"requiresConfirmation":false}
+  params: 
+  body: 
+  200: {status:string, yourIp:string, xForwardedFor?:string}
+## POST /pricing/get [getPricing] scope=read agent={"safe":true,"cost":false,"destructive":false,"reversible":true,"requiresConfirmation":false}
+  params: 
+  body: {tld?:string, tlds?:string[] | string}
+  200: {status?:string, unsupported?:string[], pricing?:{[k]:{registration?:string, renewal?:string, transfer?:string, specialType?:string, coupons?:{…}}}}
+## GET /pricing/get [getPricingGet] scope=read agent={"safe":true,"cost":false,"destructive":false,"reversible":true,"requiresConfirmation":false}
+  params: query:tld?:string, query:tlds?:string
+  body: 
+  200: {status?:string, unsupported?:string[], pricing?:{[k]:{registration?:string, renewal?:string, transfer?:string, specialType?:string, coupons?:{…}}}}
+## POST /apikey/request [apikeyRequest] scope=none agent={"safe":false,"cost":false,"destructive":false,"reversible":true,"requiresConfirmation":false}
+  params: 
+  body: {name?:string, codeChallenge?:string, codeChallengeMethod?:"S256", sandbox?:boolean, returnUrl?:string, scopes?:"read"|"dns"|"domains"|"email"|"hosting"|"purchase"|"funding"|"account"[]}
+  200: {status?:string, requestToken:string, authUrl?:string, expiration?:string, deliveryMode?:"legacy"|"pkce", message?:string}
+## POST /apikey/retrieve [apikeyRetrieve] scope=none agent={"safe":false,"cost":false,"destructive":false,"reversible":true,"requiresConfirmation":false}
+  params: 
+  body: {requestToken:string, codeVerifier?:string}
+  200: {status?:"SUCCESS"|"PENDING"|"ERROR", message?:string, code?:string}
+## POST /domain/checkDomain [domainCheckDomainBulk] scope=read agent={"safe":true,"cost":false,"destructive":false,"reversible":true,"requiresConfirmation":false}
+  params: 
+  body: {} & {domains:string[]}
+  200: {status?:string, checked?:integer, domains?:{[k]:{}}, unresolved?:string[], invalid?:{}[], limits?:{}}
+## POST /domain/checkDomain/{domain} [domainCheckDomain] scope=read agent={"safe":true,"cost":false,"destructive":false,"reversible":true,"requiresConfirmation":false}
+  params: path:domain:string
+  body: {}
+  200: {status:string, response:{avail?:"yes"|"no", type?:string, price?:string, firstYearPromo?:"yes"|"no", regularPrice?:string, premium?:"yes"|"no", minDuration?:integer, idnLanguages?:{name?:string, code?:string}[], inYourAccount?:boolean, aftermarketSearch?:string, note?:string, additional?:{renewal?:{…}, transfer?:{…}}}, limits?:{TTL?:integer, limit?:integer, used?:integer, naturalLanguage?:string}, ttlRemaining?:integer}
+## POST /domain/create/{domain} [domainCreate] scope=purchase agent={"safe":false,"cost":true,"destructive":false,"reversible":false,"requiresConfirmation":true}
+  params: path:domain:string
+  body: {cost:integer, agreeToTerms:"yes"|"1", idnLanguage?:string, whoisPrivacy?:boolean, payWith?:"usdc"|"card", usdcCheckoutId?:string, cardPaymentId?:string, dryRun?:boolean}
+  200: {status:string, domain:string, cost?:integer, orderId:integer, limits?:{attempts?:{TTL?:integer, limit?:integer, used?:integer, naturalLanguage?:string}, success?:{TTL?:integer, limit?:integer, used?:integer, naturalLanguage?:string}}, balance?:integer, ttlRemaining?:integer, requestId?:string} | {status:string, dryRun:boolean, wouldSucceed:boolean, operation:"registration"|"renewal"|"transfer", domain:string, tld?:string, available?:string, premium?:boolean, duration?:integer, cost:integer, costDisplay?:string, balance?:integer, sufficientFunds?:boolean, monthlySpendLimit?:integer, monthlySpendSoFar?:integer, withinMonthlySpendLimit?:boolean, message?:string, requestId?:string}
+## POST /domain/renew/{domain} [domainRenew] scope=purchase agent={"safe":false,"cost":true,"destructive":false,"reversible":false,"requiresConfirmation":true}
+  params: path:domain:string
+  body: {cost:integer, payWith?:"usdc"|"card", usdcCheckoutId?:string, cardPaymentId?:string, dryRun?:boolean}
+  200: {status:string, domain:string, expirationDate?:string, cost?:integer, orderId:integer, limits?:{attempts?:{TTL?:integer, limit?:integer, used?:integer, naturalLanguage?:string}, success?:{TTL?:integer, limit?:integer, used?:integer, naturalLanguage?:string}}, balance?:integer, ttlRemaining?:integer, requestId?:string} | {status:string, dryRun:boolean, wouldSucceed:boolean, operation:"registration"|"renewal"|"transfer", domain:string, tld?:string, available?:string, premium?:boolean, duration?:integer, cost:integer, costDisplay?:string, balance?:integer, sufficientFunds?:boolean, monthlySpendLimit?:integer, monthlySpendSoFar?:integer, withinMonthlySpendLimit?:boolean, message?:string, requestId?:string}
+## POST /domain/transfer/{domain} [transferDomain] scope=purchase agent={"safe":false,"cost":true,"destructive":false,"reversible":false,"requiresConfirmation":true}
+  params: path:domain:string
+  body: {authCode:string, cost:integer, holdForDnsSetup?:boolean, payWith?:"usdc"|"card", usdcCheckoutId?:string, cardPaymentId?:string, dryRun?:boolean}
+  200: {status?:"SUCCESS"|"ERROR", domain?:string, orderId?:integer, transferId?:integer, message?:string, balance?:integer, ttlRemaining?:integer, limits?:{attempts?:{}, success?:{}}, requestId?:string} | {status:string, dryRun:boolean, wouldSucceed:boolean, operation:"registration"|"renewal"|"transfer", domain:string, tld?:string, available?:string, premium?:boolean, duration?:integer, cost:integer, costDisplay?:string, balance?:integer, sufficientFunds?:boolean, monthlySpendLimit?:integer, monthlySpendSoFar?:integer, withinMonthlySpendLimit?:boolean, message?:string, requestId?:string}
+## GET /domain/getTransferSetup/{domain} [domainGetTransferSetup] scope=read agent={"safe":true,"cost":false,"destructive":false,"reversible":true,"requiresConfirmation":false}
+  params: path:domain:string
+  body: 
+  200: {status?:string, domain?:string, transfer?:{}, held?:integer, zoneReady?:integer, recordCount?:integer, delegation?:{}, dnssec?:integer, nextStep?:{}, porkbunNameservers?:string[]}
+## POST /domain/prepareTransfer/{domain} [domainPrepareTransfer] scope=domains agent={"safe":false,"cost":false,"destructive":false,"reversible":true,"requiresConfirmation":false}
+  params: path:domain:string
+  body: 
+  200: {status?:string, domain?:string, zoneReady?:boolean, recordCount?:integer, message?:string, porkbunNameservers?:string[]}
+## POST /domain/startTransfer/{domain} [domainStartTransfer] scope=domains agent={"safe":false,"cost":false,"destructive":false,"reversible":false,"requiresConfirmation":true}
+  params: path:domain:string
+  body: {force?:boolean}
+  200: {status?:string, domain?:string, message?:string}
+## POST /domain/cancelTransfer/{domain} [domainCancelTransfer] scope=domains agent={"safe":false,"cost":false,"destructive":true,"reversible":false,"requiresConfirmation":true}
+  params: path:domain:string
+  body: 
+  200: {status?:string, domain?:string, cancelled?:boolean, previousStatus?:string, transferStatus?:string, withdrawnAtRegistry?:boolean, registryResultCode?:string, registryCode?:string, refunded?:boolean, refundAmount?:integer, orderId?:integer, message?:string}
+## POST /domain/updateTransferAuthCode/{domain} [domainUpdateTransferAuthCode] scope=domains agent={"safe":false,"cost":false,"destructive":false,"reversible":true,"requiresConfirmation":false}
+  params: path:domain:string
+  body: {authCode:string}
+  200: {status?:string, domain?:string, authCodeValid?:boolean, previousStatus?:string, transferStatus?:string, message?:string}
+## GET /domain/getTransfer/{domain} [getTransferGet] scope=read agent={"safe":true,"cost":false,"destructive":false,"reversible":true,"requiresConfirmation":false}
+  params: path:domain:string
+  body: 
+  200: {status?:"SUCCESS"|"ERROR", transfer?:{domain?:string, status?:"NEW"|"PENDINGAUTH"|"PENDINGSUBMIT"|"PENDINGTRANSFER"|"DONE"|"CANCELED"|"INIT", statusDescription?:string, transferDate?:string, orderId?:integer}}
+## GET /domain/listTransfers [listTransfersGet] scope=read agent={"safe":true,"cost":false,"destructive":false,"reversible":true,"requiresConfirmation":false}
+  params: 
+  body: 
+  200: {status?:"SUCCESS"|"ERROR", transfers?:{domain?:string, status?:"NEW"|"PENDINGAUTH"|"PENDINGSUBMIT"|"PENDINGTRANSFER"|"DONE"|"CANCELED"|"INIT", statusDescription?:string, transferDate?:string, orderId?:integer}[]}
+## POST /domain/listAll [listDomains] scope=read agent={"safe":true,"cost":false,"destructive":false,"reversible":true,"requiresConfirmation":false}
+  params: 
+  body: {start?:integer, includeLabels?:"yes"|"no", domain?:string, nameContains?:string, expiringWithinDays?:integer, addedAfter?:string, addedBefore?:string, createdAfter?:string, createdBefore?:string, expiresAfter?:string, expiresBefore?:string, tlds?:string[], autoRenew?:"yes"|"no", apiAccess?:"yes"|"no", sortName?:"domain"|"tld"|"create_date"|"added_date"|"expire_date", sortDirection?:"asc"|"desc"}
+  200: {status:string, count?:integer, domains:{domain?:string, status?:string, tld?:string, createDate?:string, addedDate?:string, expireDate?:string, securityLock?:integer, whoisPrivacy?:integer, autoRenew?:integer, apiAccess?:integer, notLocal?:integer, labels?:{id?:string, title?:string, color?:string}[]}[]}
+## GET /domain/listAll [getDomains] scope=read agent={"safe":true,"cost":false,"destructive":false,"reversible":true,"requiresConfirmation":false}
+  params: query:start?:integer, query:includeLabels?:"yes"|"no", query:domain?:string, query:nameContains?:string, query:expiringWithinDays?:integer, query:addedAfter?:string, query:addedBefore?:string, query:createdAfter?:string, query:createdBefore?:string, query:expiresAfter?:string, query:expiresBefore?:string, query:tlds?:string[], query:autoRenew?:"yes"|"no", query:apiAccess?:"yes"|"no", query:sortName?:"domain"|"tld"|"create_date"|"added_date"|"expire_date", query:sortDirection?:"asc"|"desc"
+  body: 
+  200: {status:string, count?:integer, domains:{domain?:string, status?:string, tld?:string, createDate?:string, addedDate?:string, expireDate?:string, securityLock?:integer, whoisPrivacy?:integer, autoRenew?:integer, apiAccess?:integer, notLocal?:integer, labels?:{id?:string, title?:string, color?:string}[]}[]}
+## GET /domain/get/{domain} [getDomain] scope=read agent={"safe":true,"cost":false,"destructive":false,"reversible":true,"requiresConfirmation":false}
+  params: path:domain:string, query:includeLabels?:"yes"|"no"
+  body: 
+  200: {status?:string, domain?:{domain?:string, status?:string, tld?:string, createDate?:string, expireDate?:string, securityLock?:integer, whoisPrivacy?:integer, autoRenew?:integer, apiAccess?:integer, notLocal?:integer}}
+## POST /domain/updateAutoRenew/{domain} [domainUpdateAutoRenew] scope=domains agent={"safe":false,"cost":false,"destructive":false,"reversible":true,"requiresConfirmation":false}
+  params: path:domain?:string
+  body: {status:"on"|"off", domains?:string[]}
+  200: {status?:string, results?:{[k]:{status?:string, message?:string}}}
+## POST /domain/getNs/{domain} [domainGetNs] scope=read agent={"safe":true,"cost":false,"destructive":false,"reversible":true,"requiresConfirmation":false}
+  params: path:domain:string
+  body: {}
+  200: {status?:string, ns?:string[]}
+## GET /domain/getNs/{domain} [getDomainNs] scope=read agent={"safe":true,"cost":false,"destructive":false,"reversible":true,"requiresConfirmation":false}
+  params: path:domain:string
+  body: 
+  200: {status?:string, ns?:string[]}
+## POST /domain/updateNs/{domain} [domainUpdateNs] scope=domains agent={"safe":false,"cost":false,"destructive":false,"reversible":true,"requiresConfirmation":false}
+  params: path:domain:string
+  body: {ns:string[]}
+  200: {warnings?:string[], status:"SUCCESS"|"ERROR", message?:string, code?:string}
+## POST /domain/getGlue/{domain} [domainGetGlue] scope=read agent={"safe":true,"cost":false,"destructive":false,"reversible":true,"requiresConfirmation":false}
+  params: path:domain:string
+  body: {}
+  200: {status?:string, hosts?:string | {v4:string[], v6:string[]}[][], glue?:{host:string, v4:string[], v6:string[]}[]}
+## GET /domain/getGlue/{domain} [getDomainGlue] scope=read agent={"safe":true,"cost":false,"destructive":false,"reversible":true,"requiresConfirmation":false}
+  params: path:domain:string
+  body: 
+  200: {status?:string, hosts?:string | {v4:string[], v6:string[]}[][], glue?:{host:string, v4:string[], v6:string[]}[]}
+## POST /domain/createGlue/{domain}/{subdomain} [domainCreateGlue] scope=domains agent={"safe":false,"cost":false,"destructive":false,"reversible":true,"requiresConfirmation":false}
+  params: path:domain:string, path:subdomain:string
+  body: {ips:string[]}
+  200: {warnings?:string[], status:"SUCCESS"|"ERROR", message?:string, code?:string}
+## POST /domain/updateGlue/{domain}/{subdomain} [domainUpdateGlue] scope=domains agent={"safe":false,"cost":false,"destructive":false,"reversible":true,"requiresConfirmation":false}
+  params: path:domain:string, path:subdomain:string
+  body: {ips:string[]}
+  200: {warnings?:string[], status:"SUCCESS"|"ERROR", message?:string, code?:string}
+## POST /domain/deleteGlue/{domain}/{subdomain} [domainDeleteGlue] scope=domains agent={"safe":false,"cost":false,"destructive":true,"reversible":true,"requiresConfirmation":true}
+  params: path:domain:string, path:subdomain:string
+  body: {}
+  200: {warnings?:string[], status:"SUCCESS"|"ERROR", message?:string, code?:string}
+## POST /domain/getUrlForwarding/{domain} [domainGetUrlForwarding] scope=read agent={"safe":true,"cost":false,"destructive":false,"reversible":true,"requiresConfirmation":false}
+  params: path:domain:string
+  body: {}
+  200: {status:string, forwards:{id?:string, subdomain?:string, location?:string, type?:"permanent"|"temporary"|"masked", redirectType?:"301"|"302"|"307"|"masked", includePath?:"yes"|"no", wildcard?:"yes"|"no"}[]}
+## GET /domain/getUrlForwarding/{domain} [getDomainUrlForwarding] scope=read agent={"safe":true,"cost":false,"destructive":false,"reversible":true,"requiresConfirmation":false}
+  params: path:domain:string
+  body: 
+  200: {status:string, forwards:{id?:string, subdomain?:string, location?:string, type?:"permanent"|"temporary"|"masked", redirectType?:"301"|"302"|"307"|"masked", includePath?:"yes"|"no", wildcard?:"yes"|"no"}[]}
+## POST /domain/addUrlForward/{domain} [domainAddUrlForward] scope=dns agent={"safe":false,"cost":false,"destructive":false,"reversible":true,"requiresConfirmation":false}
+  params: path:domain:string
+  body: {subdomain?:string, location:string, type:"temporary"|"permanent"|"masked", redirectType?:"301"|"302"|"307"|"masked", includePath:"yes"|"no", wildcard:"yes"|"no"}
+  200: {warnings?:string[], status:"SUCCESS"|"ERROR", message?:string, code?:string}
+## POST /domain/deleteUrlForward/{domain}/{id} [domainDeleteUrlForward] scope=dns agent={"safe":false,"cost":false,"destructive":true,"reversible":true,"requiresConfirmation":true}
+  params: path:domain:string, path:id:string
+  body: {}
+  200: {warnings?:string[], status:"SUCCESS"|"ERROR", message?:string, code?:string}
+## GET /domain/getContacts/{domain} [domainGetContacts] scope=read agent={"safe":true,"cost":false,"destructive":false,"reversible":true,"requiresConfirmation":false}
+  params: path:domain:string
+  body: 
+  200: {status?:string, contacts?:{registrant?:{firstName?:string, lastName?:string, organization?:string, address1?:string, address2?:string, address3?:string, city?:string, state?:string, postalCode?:string, country?:string, phone?:string, phoneCountryCode?:string, fax?:string, email?:string}, admin?:{firstName?:string, lastName?:string, organization?:string, address1?:string, address2?:string, address3?:string, city?:string, state?:string, postalCode?:string, country?:string, phone?:string, phoneCountryCode?:string, fax?:string, email?:string}, tech?:{firstName?:string, lastName?:string, organization?:string, address1?:string, address2?:string, address3?:string, city?:string, state?:string, postalCode?:string, country?:string, phone?:string, phoneCountryCode?:string, fax?:string, email?:string}, billing?:{firstName?:string, lastName?:string, organization?:string, address1?:string, address2?:string, address3?:string, city?:string, state?:string, postalCode?:string, country?:string, phone?:string, phoneCountryCode?:string, fax?:string, email?:string}}}
+## POST /domain/updateContacts/{domain} [domainUpdateContacts] scope=domains agent={"safe":false,"cost":false,"destructive":false,"reversible":true,"requiresConfirmation":false}
+  params: path:domain:string
+  body: {} & {contacts?:{registrant?:{firstName?:string, lastName?:string, organization?:string, address1?:string, address2?:string, address3?:string, city?:string, state?:string, postalCode?:string, country?:string, phone?:string, phoneCountryCode?:string, fax?:string, email?:string}, admin?:{firstName?:string, lastName?:string, organization?:string, address1?:string, address2?:string, address3?:string, city?:string, state?:string, postalCode?:string, country?:string, phone?:string, phoneCountryCode?:string, fax?:string, email?:string}, tech?:{firstName?:string, lastName?:string, organization?:string, address1?:string, address2?:string, address3?:string, city?:string, state?:string, postalCode?:string, country?:string, phone?:string, phoneCountryCode?:string, fax?:string, email?:string}, billing?:{firstName?:string, lastName?:string, organization?:string, address1?:string, address2?:string, address3?:string, city?:string, state?:string, postalCode?:string, country?:string, phone?:string, phoneCountryCode?:string, fax?:string, email?:string}}, contact?:{firstName?:string, lastName?:string, organization?:string, address1?:string, address2?:string, address3?:string, city?:string, state?:string, postalCode?:string, country?:string, phone?:string, phoneCountryCode?:string, fax?:string, email?:string}, dryRun?:boolean, addressValidationChoice?:"accept_suggestion"|"use_as_entered"}
+  200: {status?:string, message?:string, registrantChanged?:boolean}
+## POST /dns/retrieve/{domain} [dnsRetrieve] scope=read agent={"safe":true,"cost":false,"destructive":false,"reversible":true,"requiresConfirmation":false}
+  params: path:domain:string
+  body: {}
+  200: {status:string, cloudflare?:"enabled"|"disabled", records:{id?:string, name?:string, type?:string, content?:string, ttl?:string, prio?:string?null, notes?:string?null}[]}
+## GET /dns/retrieve/{domain} [getDnsRecords] scope=read agent={"safe":true,"cost":false,"destructive":false,"reversible":true,"requiresConfirmation":false}
+  params: path:domain:string
+  body: 
+  200: {status:string, cloudflare?:"enabled"|"disabled", records:{id?:string, name?:string, type?:string, content?:string, ttl?:string, prio?:string?null, notes?:string?null}[]}
+## POST /dns/retrieve/{domain}/{id} [dnsRetrieveById] scope=read agent={"safe":true,"cost":false,"destructive":false,"reversible":true,"requiresConfirmation":false}
+  params: path:domain:string, path:id:string
+  body: {}
+  200: {status:string, cloudflare?:"enabled"|"disabled", records:{id?:string, name?:string, type?:string, content?:string, ttl?:string, prio?:string?null, notes?:string?null}[]}
+## GET /dns/retrieve/{domain}/{id} [getDnsRecordById] scope=read agent={"safe":true,"cost":false,"destructive":false,"reversible":true,"requiresConfirmation":false}
+  params: path:domain:string, path:id:string
+  body: 
+  200: {status:string, cloudflare?:"enabled"|"disabled", records:{id?:string, name?:string, type?:string, content?:string, ttl?:string, prio?:string?null, notes?:string?null}[]}
+## POST /dns/retrieveByNameType/{domain}/{type}/{subdomain} [dnsRetrieveByNameType] scope=read agent={"safe":true,"cost":false,"destructive":false,"reversible":true,"requiresConfirmation":false}
+  params: path:domain:string, path:type:string, path:subdomain?:string
+  body: {}
+  200: {status:string, cloudflare?:"enabled"|"disabled", records:{id?:string, name?:string, type?:string, content?:string, ttl?:string, prio?:string?null, notes?:string?null}[]}
+## GET /dns/retrieveByNameType/{domain}/{type}/{subdomain} [getDnsRecordsByNameType] scope=read agent={"safe":true,"cost":false,"destructive":false,"reversible":true,"requiresConfirmation":false}
+  params: path:domain:string, path:type:string, path:subdomain?:string
+  body: 
+  200: {status:string, cloudflare?:"enabled"|"disabled", records:{id?:string, name?:string, type?:string, content?:string, ttl?:string, prio?:string?null, notes?:string?null}[]}
+## POST /dns/create/{domain} [dnsCreate] scope=dns agent={"safe":false,"cost":false,"destructive":false,"reversible":true,"requiresConfirmation":false}
+  params: path:domain:string
+  body: {name?:string, type:"A"|"AAAA"|"MX"|"CNAME"|"ALIAS"|"TXT"|"NS"|"SRV"|"TLSA"|"CAA"|"SSHFP"|"HTTPS"|"SVCB"|"DS", content:string, ttl?:integer, prio?:integer, notes?:string, dryRun?:boolean}
+  200: {status?:string, id?:integer, warnings?:string[]}
+## POST /dns/edit/{domain}/{id} [dnsEdit] scope=dns agent={"safe":false,"cost":false,"destructive":false,"reversible":true,"requiresConfirmation":false}
+  params: path:domain:string, path:id:string
+  body: {name?:string, type?:"A"|"AAAA"|"MX"|"CNAME"|"ALIAS"|"TXT"|"NS"|"SRV"|"TLSA"|"CAA"|"SSHFP"|"HTTPS"|"SVCB"|"DS", content?:string, ttl?:integer, prio?:integer, notes?:string}
+  200: {warnings?:string[], status:"SUCCESS"|"ERROR", message?:string, code?:string}
+## POST /dns/editByNameType/{domain}/{type}/{subdomain} [dnsEditByNameType] scope=dns agent={"safe":false,"cost":false,"destructive":false,"reversible":true,"requiresConfirmation":false}
+  params: path:domain:string, path:type:string, path:subdomain?:string
+  body: {content:string, ttl?:integer, prio?:integer, notes?:string}
+  200: {warnings?:string[], status:"SUCCESS"|"ERROR", message?:string, code?:string}
+## POST /dns/delete/{domain}/{id} [dnsDelete] scope=dns agent={"safe":false,"cost":false,"destructive":true,"reversible":true,"requiresConfirmation":true}
+  params: path:domain:string, path:id:string
+  body: {}
+  200: {warnings?:string[], status:"SUCCESS"|"ERROR", message?:string, code?:string}
+## POST /dns/deleteByNameType/{domain}/{type}/{subdomain} [dnsDeleteByNameType] scope=dns agent={"safe":false,"cost":false,"destructive":true,"reversible":true,"requiresConfirmation":true}
+  params: path:domain:string, path:type:string, path:subdomain?:string
+  body: {}
+  200: {warnings?:string[], status:"SUCCESS"|"ERROR", message?:string, code?:string}
+## GET /closeout/search [closeoutSearch] scope=read agent={"safe":true,"cost":false,"destructive":false,"reversible":true,"requiresConfirmation":false}
+  params: query:query?:string, query:tld?:string, query:nameLength?:integer, query:ageMin?:integer, query:ageMax?:integer, query:priceMin?:integer, query:priceMax?:integer, query:sortName?:string, query:sortDirection?:string, query:start?:integer, query:limit?:integer
+  body: 
+  200: {status?:string, count?:integer, totalAvailable?:integer, start?:integer, limit?:integer, closeouts?:{closeoutId?:integer, domain?:string, tld?:string, price?:integer, providerRenewalPrice?:integer?null, renewalPrice?:integer?null, totalPrice?:integer?null, localDomain?:boolean?null, age?:integer?null, registrationDate?:string?null, endTime?:string?null, nameLength?:integer?null, isIdn?:boolean, estibotAppraisal?:integer?null, monthlyVisitors?:integer?null, inboundLinks?:integer?null, expiredRevenue?:integer?null, otherTldCount?:integer?null}[]}
+## GET /closeout/get/{domain} [closeoutGet] scope=read agent={"safe":true,"cost":false,"destructive":false,"reversible":true,"requiresConfirmation":false}
+  params: path:domain:string
+  body: 
+  200: {status?:string, available?:boolean, closeout?:{closeoutId?:integer, domain?:string, tld?:string, price?:integer, providerRenewalPrice?:integer?null, renewalPrice?:integer?null, totalPrice?:integer?null, localDomain?:boolean?null, age?:integer?null, registrationDate?:string?null, endTime?:string?null, nameLength?:integer?null, isIdn?:boolean, estibotAppraisal?:integer?null, monthlyVisitors?:integer?null, inboundLinks?:integer?null, expiredRevenue?:integer?null, otherTldCount?:integer?null}}
+## POST /closeout/buy/{domain} [closeoutBuy] scope=purchase agent={"safe":false,"cost":true,"destructive":false,"reversible":false,"requiresConfirmation":true}
+  params: path:domain:string
+  body: {cost:integer, payWith?:"usdc"|"card", usdcCheckoutId?:string, cardPaymentId?:string, dryRun?:boolean}
+  200: {status?:string, domain?:string, orderId?:integer, closeoutId?:integer, closeoutPrice?:integer, renewalPrice?:integer, totalPrice?:integer, message?:string}
+## GET /aftermarket/search [aftermarketSearch] scope=read agent={"safe":true,"cost":false,"destructive":false,"reversible":true,"requiresConfirmation":false}
+  params: query:query:string, query:tld?:string, query:saleType?:"buy_now"|"make_offer"|"auction", query:priceMin?:integer, query:priceMax?:integer, query:limit?:integer
+  body: 
+  200: {status?:string, query?:string, exactMatch?:{domain?:string, tld?:string, price?:integer, priceDisplay?:string, priceMeaning?:"buy_now_price"|"minimum_offer"|"current_bid", saleType?:"buy_now"|"make_offer"|"auction", source?:string, fastTransfer?:boolean, buyUrl?:string}, listings?:{domain?:string, tld?:string, price?:integer, priceDisplay?:string, priceMeaning?:"buy_now_price"|"minimum_offer"|"current_bid", saleType?:"buy_now"|"make_offer"|"auction", source?:string, fastTransfer?:boolean, buyUrl?:string}[], count?:integer, total?:integer, sourcesUnavailable?:string[], note?:string}
+## GET /dns/preflight/{domain} [dnsPreflight] scope=read agent={"safe":true,"cost":false,"destructive":false,"reversible":true,"requiresConfirmation":false}
+  params: path:domain:string, query:intent?:"general"|"move-nameservers"|"transfer-out"|"enable-dnssec"
+  body: {}
+  200: {status?:string, domain?:string, intent?:string, safe?:boolean, blockers?:string[], warnings?:string[], checks?:{id?:string, severity?:"blocker"|"warning"|"info", ok?:boolean, title?:string, detail?:string, next_action?:string}[]}
+## GET /dns/history/{domain} [dnsHistory] scope=read agent={"safe":true,"cost":false,"destructive":false,"reversible":true,"requiresConfirmation":false}
+  params: path:domain:string
+  body: {}
+  200: {status?:string, domain?:string, restorePoints?:{id?:integer, takenAt?:string, reason?:string, source?:string, recordCount?:integer, matchesLive?:boolean}[]}
+## GET /dns/diff/{domain}/{snapshotId} [dnsDiff] scope=read agent={"safe":true,"cost":false,"destructive":false,"reversible":true,"requiresConfirmation":false}
+  params: path:domain:string, path:snapshotId:integer
+  body: {}
+  200: {status?:string, domain?:string, snapshot?:{id?:integer, takenAt?:string, reason?:string}, missing?:{name?:string, type?:string, content?:string, ttl?:integer, prio?:integer?null}[], extra?:{name?:string, type?:string, content?:string, ttl?:integer, prio?:integer?null}[], inSync?:boolean}
+## POST /dns/restore/{domain} [dnsRestore] scope=dns agent={"safe":false,"cost":false,"destructive":true,"reversible":true,"requiresConfirmation":true}
+  params: path:domain:string
+  body: {} & {snapshotId:integer, prune?:boolean, dryRun?:boolean}
+  200: {warnings?:string[], status?:string, domain?:string, restoredFrom?:integer, previousStateSavedAs?:integer?null, restored?:integer, removed?:integer, failed?:{name?:string, type?:string, reason?:string}[]}
+## GET /dns/scan/{domain} [dnsScan] scope=read agent={"safe":true,"cost":false,"destructive":false,"reversible":true,"requiresConfirmation":false}
+  params: path:domain:string
+  body: 
+  200: {status?:string, domain?:string, recordCount?:integer, records?:{name?:string, type?:string, content?:string, ttl?:integer, prio?:integer?null}[]}
+## POST /dns/import/{domain} [dnsImport] scope=dns agent={"safe":false,"cost":false,"destructive":false,"reversible":true,"requiresConfirmation":false}
+  params: path:domain:string
+  body: {records?:{name?:string, type?:string, content?:string, ttl?:integer, prio?:integer?null}[]}
+  200: {status?:string, domain?:string, created?:integer, skipped?:integer, failed?:integer, failures?:{}[], warnings?:string[]}
+## POST /dns/getDnssecRecords/{domain} [dnsGetDnssecRecords] scope=read agent={"safe":true,"cost":false,"destructive":false,"reversible":true,"requiresConfirmation":false}
+  params: path:domain:string
+  body: {}
+  200: {status?:string, records?:{[k]:{keyTag?:string, alg?:string, digestType?:string, digest?:string, pubKey?:string}}}
+## GET /dns/getDnssecRecords/{domain} [getDnssecRecords] scope=read agent={"safe":true,"cost":false,"destructive":false,"reversible":true,"requiresConfirmation":false}
+  params: path:domain:string
+  body: 
+  200: {status?:string, records?:{[k]:{keyTag?:string, alg?:string, digestType?:string, digest?:string, pubKey?:string}}}
+## POST /dns/createDnssecRecord/{domain} [dnsCreateDnssecRecord] scope=domains agent={"safe":false,"cost":false,"destructive":false,"reversible":true,"requiresConfirmation":false}
+  params: path:domain:string
+  body: {keyTag:string, alg:string, digestType:string, digest:string, maxSigLife?:string, keyDataFlags?:string, keyDataProtocol?:string, keyDataAlgo?:string, keyDataPubKey?:string}
+  200: {warnings?:string[], status:"SUCCESS"|"ERROR", message?:string, code?:string} & {warnings?:string[]}
+## POST /dns/deleteDnssecRecord/{domain}/{keytag} [dnsDeleteDnssecRecord] scope=domains agent={"safe":false,"cost":false,"destructive":true,"reversible":true,"requiresConfirmation":true}
+  params: path:domain:string, path:keytag:string
+  body: {}
+  200: {warnings?:string[], status:"SUCCESS"|"ERROR", message?:string, code?:string}
+## GET /hosting/plans [hostingPlans] scope=read agent={"safe":true,"cost":false,"destructive":false,"reversible":true,"requiresConfirmation":false}
+  params: 
+  body: 
+  200: {status?:string, plans?:{product?:string, plan?:string, sku?:string, interval?:string, price?:integer, priceFormatted?:string, trialDays?:integer, name?:string, features?:{}}[]}
+## POST /hosting/create/{domain} [hostingCreate] scope=purchase agent={"safe":false,"cost":true,"destructive":false,"reversible":true,"requiresConfirmation":true}
+  params: path:domain:string
+  body: {} & {sku:"PIXIESECURESTATICM2"|"PIXIESECURESTATICY2", acknowledgedCost:integer, agreeToTerms:"yes", agreeToNameserverChange?:boolean, payWith?:"usdc"|"card", usdcCheckoutId?:string, cardPaymentId?:string, dryRun?:boolean}
+  200: {status?:string, orderId?:integer, hosting?:{domain?:string, product?:string, plan?:string, server?:string, status?:"ACTIVE"|"PENDING", trial?:boolean, trialEndsAt?:string?null, autoRenew?:boolean, sku?:string}, charged?:integer, cost?:{amount?:integer, formatted?:string, interval?:string}, message?:string}
+## GET /hosting/get/{domain} [hostingGet] scope=read agent={"safe":true,"cost":false,"destructive":false,"reversible":true,"requiresConfirmation":false}
+  params: path:domain:string
+  body: 
+  200: {status?:string, hosting?:{domain?:string, product?:string, status?:string, plan?:string, server?:string, isTrial?:boolean, autoRenew?:boolean, expireDate?:string, pendingRetire?:boolean, cost?:{}, wordpress?:{restUrl?:string, adminUrl?:string, site?:{…}}}}
+## POST /hosting/deploy/{domain} [hostingDeploy] scope=hosting agent={"safe":false,"cost":false,"destructive":true,"reversible":true,"requiresConfirmation":true}
+  params: path:domain:string
+  body: {} & {files:{path?:string, content?:string}[]}
+  200: {status?:string, deployed?:string[], skipped?:{path?:string, reason?:string}[]}
+## GET /hosting/files/{domain} [hostingFiles] scope=read agent={"safe":true,"cost":false,"destructive":false,"reversible":true,"requiresConfirmation":false}
+  params: path:domain:string
+  body: 
+  200: {status?:string, path?:string, files?:string[]}
+## POST /hosting/deleteFile/{domain} [hostingDeleteFile] scope=hosting agent={"safe":false,"cost":false,"destructive":true,"reversible":true,"requiresConfirmation":true}
+  params: path:domain:string
+  body: {} & {path:string, recursive?:boolean}
+  200: {status?:string, deleted?:string}
+## POST /hosting/delete/{domain} [hostingDelete] scope=hosting agent={"safe":false,"cost":false,"destructive":true,"reversible":true,"requiresConfirmation":true}
+  params: path:domain:string
+  body: {}
+  200: {warnings?:string[], status:"SUCCESS"|"ERROR", message?:string, code?:string}
+## POST /ssl/retrieve/{domain} [sslRetrieve] scope=domains agent={"safe":false,"cost":false,"destructive":false,"reversible":true,"requiresConfirmation":false}
+  params: path:domain:string
+  body: {}
+  200: {status?:string, certificatechain?:string, privatekey?:string, publickey?:string}
+## GET /ssl/retrieve/{domain} [getSslRetrieve] scope=domains agent={"safe":false,"cost":false,"destructive":false,"reversible":true,"requiresConfirmation":false}
+  params: path:domain:string
+  body: 
+  200: {status?:string, certificatechain?:string, privatekey?:string, publickey?:string}
+## POST /email/getForwards/{domain} [emailGetForwards] scope=read agent={"safe":true,"cost":false,"destructive":false,"reversible":true,"requiresConfirmation":false}
+  params: path:domain:string
+  body: {}
+  200: {status?:string, domain?:string, forwards?:{address?:string, forwardTo?:string, created?:string}[], limits?:{used?:integer, max?:integer}, dnsConfigured?:boolean}
+## GET /email/getForwards/{domain} [getEmailForwards] scope=read agent={"safe":true,"cost":false,"destructive":false,"reversible":true,"requiresConfirmation":false}
+  params: path:domain:string
+  body: {}
+  200: {status?:string, domain?:string, forwards?:{address?:string, forwardTo?:string, created?:string}[], limits?:{used?:integer, max?:integer}, dnsConfigured?:boolean}
+## POST /email/addForward/{domain} [emailAddForward] scope=email agent={"safe":false,"cost":false,"destructive":false,"reversible":true,"requiresConfirmation":false}
+  params: path:domain:string
+  body: {} & {address:string, forwardTo:string, confirmDnsChanges?:boolean, dryRun?:boolean}
+  200: {status?:string, domain?:string, address?:string, forwardTo?:string, dnsChanges?:{mxRecordsRemoved?:{id?:string, content?:string, prio?:string}[], spf?:"set"|"merge"|"unchanged"|"unchanged_over_limits", spfBefore?:string, spfAfter?:string}, limits?:{used?:integer, max?:integer}}
+## POST /email/deleteForward/{domain} [emailDeleteForward] scope=email agent={"safe":false,"cost":false,"destructive":true,"reversible":true,"requiresConfirmation":false}
+  params: path:domain:string
+  body: {} & {address:string, forwardTo:string}
+  200: {status?:string, address?:string, forwardTo?:string, dnsRecordsRemoved?:boolean}
+## POST /email/getMailboxes/{domain} [emailGetMailboxes] scope=read agent={"safe":true,"cost":false,"destructive":false,"reversible":true,"requiresConfirmation":false}
+  params: path:domain:string
+  body: {}
+  200: {status?:string, mailboxes?:{id?:integer, address?:string?null, status?:"PENDINGSETUP"|"ACTIVE"|"SUSPENDED"|"PAUSED", trial?:boolean, expires?:string, quota?:string, autoRenews?:boolean, renewalPrice?:integer}[], price?:{amount?:integer, formatted?:string, interval?:string}, clientSettings?:{}}
+## GET /email/getMailboxes/{domain} [getEmailMailboxes] scope=read agent={"safe":true,"cost":false,"destructive":false,"reversible":true,"requiresConfirmation":false}
+  params: path:domain:string
+  body: {}
+  200: {status?:string, mailboxes?:{id?:integer, address?:string?null, status?:"PENDINGSETUP"|"ACTIVE"|"SUSPENDED"|"PAUSED", trial?:boolean, expires?:string, quota?:string, autoRenews?:boolean, renewalPrice?:integer}[], price?:{amount?:integer, formatted?:string, interval?:string}, clientSettings?:{}}
+## POST /email/setupMailbox/{domain} [emailSetupMailbox] scope=email agent={"safe":false,"cost":false,"destructive":false,"reversible":true,"requiresConfirmation":false}
+  params: path:domain:string
+  body: {} & {address:string, password?:string, confirmDnsChanges?:boolean, dryRun?:boolean, mailboxId?:integer}
+  200: {status?:string, domain?:string, mailbox?:{id?:integer, address?:string?null, status?:"PENDINGSETUP"|"ACTIVE"|"SUSPENDED"|"PAUSED", trial?:boolean, expires?:string, quota?:string, autoRenews?:boolean, renewalPrice?:integer}, password?:string, passwordGenerated?:boolean, dnsChanges?:{}, clientSettings?:{}, orderId?:integer, charged?:integer, message?:string}
+## POST /email/createMailbox/{domain} [emailCreateMailbox] scope=purchase agent={"safe":false,"cost":true,"destructive":false,"reversible":false,"requiresConfirmation":true}
+  params: path:domain:string
+  body: {} & {address:string, password?:string, confirmDnsChanges?:boolean, dryRun?:boolean, cost:integer, agreeToTerms:"yes", payWith?:"card"|"usdc", cardPaymentId?:string, usdcCheckoutId?:string}
+  200: {status?:string, domain?:string, mailbox?:{id?:integer, address?:string?null, status?:"PENDINGSETUP"|"ACTIVE"|"SUSPENDED"|"PAUSED", trial?:boolean, expires?:string, quota?:string, autoRenews?:boolean, renewalPrice?:integer}, password?:string, passwordGenerated?:boolean, dnsChanges?:{}, clientSettings?:{}, orderId?:integer, charged?:integer, message?:string}
+## POST /email/renewMailbox/{domain} [emailRenewMailbox] scope=purchase agent={"safe":false,"cost":true,"destructive":false,"reversible":false,"requiresConfirmation":true}
+  params: path:domain:string
+  body: {} & {mailboxId?:integer, address?:string, cost:integer, agreeToTerms:"yes", payWith?:"card"|"usdc", cardPaymentId?:string, usdcCheckoutId?:string, dryRun?:boolean}
+  200: {status?:string, mailbox?:{}, orderId?:integer, charged?:integer, message?:string}
+## POST /email/setPassword [emailSetPassword] scope=email agent={"safe":false,"cost":false,"destructive":false,"reversible":true,"requiresConfirmation":false}
+  params: 
+  body: {} & {emailAddress:string, password:string}
+  200: {warnings?:string[], status:"SUCCESS"|"ERROR", message?:string, code?:string}
+## GET /marketplace/getAll [listMarketplaceListingsGet] scope=read agent={"safe":true,"cost":false,"destructive":false,"reversible":true,"requiresConfirmation":false}
+  params: query:query?:string, query:tlds?:string[], query:sldLengthMin?:integer, query:sldLengthMax?:integer, query:sortName?:"domain"|"tld"|"price"|"sld_length", query:sortDirection?:"asc"|"desc", query:start?:integer, query:limit?:integer
+  body: 
+  200: {status?:string, count?:integer, filtered?:boolean, domains?:{create_date?:string, domain?:string, tld?:string, sld_length?:integer, price?:number}[]}
+## POST /marketplace/getAll [listMarketplaceListings] scope=read agent={"safe":true,"cost":false,"destructive":false,"reversible":true,"requiresConfirmation":false}
+  params: 
+  body: {} & {start?:integer, limit?:integer, query?:string, tlds?:string[], sldLengthMin?:integer, sldLengthMax?:integer, sortName?:"domain"|"tld"|"price"|"sld_length", sortDirection?:"asc"|"desc"}
+  200: {status?:string, count?:integer, filtered?:boolean, domains?:{create_date?:string, domain?:string, tld?:string, sld_length?:integer, price?:number}[]}
+## GET /account/autoTopup [getAutoTopup] scope=funding agent={"safe":true,"cost":false,"destructive":false,"reversible":true,"requiresConfirmation":false}
+  params: 
+  body: 
+  200: {status?:string, enabled?:boolean, threshold?:integer?null, amount?:integer?null, effectiveAmount?:integer, defaultAmount?:integer, paymentMethodOnFile?:boolean, cards?:{role?:"primary"|"backup", type?:"card"|"link", brand?:string, last4?:string?null, expMonth?:integer?null, expYear?:integer?null, nickname?:string?null, status?:"active"|"expired"|"declined", lastDeclineCode?:string?null, retryAfter?:string?null, usedForTopups?:boolean}[], balance?:integer, chargesToday?:integer, chargesThisMonth?:integer, maxChargesPerDay?:integer, maxChargesPerMonth?:integer, warnings?:string[]}
+## POST /account/autoTopup [setAutoTopup] scope=funding agent={"safe":false,"cost":false,"destructive":false,"reversible":true,"requiresConfirmation":false}
+  params: 
+  body: {enabled:boolean, threshold?:integer, amount?:integer, dryRun?:boolean}
+  200: {status?:string, enabled?:boolean, threshold?:integer?null, amount?:integer?null, effectiveAmount?:integer, defaultAmount?:integer, paymentMethodOnFile?:boolean, cards?:{role?:"primary"|"backup", type?:"card"|"link", brand?:string, last4?:string?null, expMonth?:integer?null, expYear?:integer?null, nickname?:string?null, status?:"active"|"expired"|"declined", lastDeclineCode?:string?null, retryAfter?:string?null, usedForTopups?:boolean}[], balance?:integer, chargesToday?:integer, chargesThisMonth?:integer, maxChargesPerDay?:integer, maxChargesPerMonth?:integer, warnings?:string[]}
+## POST /account/topup [topupAccountCredit] scope=funding agent={"safe":false,"cost":true,"destructive":false,"reversible":false,"requiresConfirmation":true}
+  params: 
+  body: {amount?:integer, dryRun?:boolean}
+  200: {status?:string, charged?:integer, chargedDisplay?:string, balance?:integer, balanceDisplay?:string, orderId?:integer, usedDefaultAmount?:boolean, chargesToday?:integer, chargesThisMonth?:integer, simulated?:boolean, message?:string, card?:{type?:"card"|"link", brand?:string, last4?:string?null, expMonth?:integer?null, expYear?:integer?null, nickname?:string?null, usedBackup?:boolean}, usedBackup?:boolean, declinedFirst?:{type?:"card"|"link", brand?:string, last4?:string?null, expMonth?:integer?null, expYear?:integer?null, nickname?:string?null, declineCode?:string}[]}
+## POST /account/invite [createAccountInvite] scope=account agent={"safe":false,"cost":false,"destructive":false,"reversible":true,"requiresConfirmation":false}
+  params: 
+  body: {email?:string, returnUrl?:string}
+  200: {status:string, inviteToken:string, inviteUrl:string, expires:string}
+## GET /account/inviteStatus [getAccountInviteStatus] scope=read agent={"safe":true,"cost":false,"destructive":false,"reversible":true,"requiresConfirmation":false}
+  params: query:token:string
+  body: 
+  200: {status:string, inviteStatus:"PENDING"|"ACCEPTED"|"EXPIRED", newAccountId?:integer}
+## GET /account/balance [getBalance] scope=read agent={"safe":true,"cost":false,"destructive":false,"reversible":true,"requiresConfirmation":false}
+  params: 
+  body: 
+  200: {status?:"SUCCESS"|"ERROR", balance?:integer, display?:string}
+## GET /account/invoices [listInvoices] scope=read agent={"safe":true,"cost":false,"destructive":false,"reversible":true,"requiresConfirmation":false}
+  params: query:year?:integer, query:start?:integer, query:limit?:integer
+  body: 
+  200: {status?:string, invoices?:{id?:integer, date?:string, state?:"PAID"|"PARTIALLY_REFUNDED"|"REFUNDED"|"UNPAID", total_cents?:integer, total?:string, itemCount?:integer, domains?:string[], url?:string?null}[], total?:integer, start?:integer, limit?:integer, years?:integer[]}
+## GET /account/invoice/{orderId} [getInvoice] scope=read agent={"safe":true,"cost":false,"destructive":false,"reversible":true,"requiresConfirmation":false}
+  params: path:orderId:integer
+  body: 
+  200: {status?:string, invoice?:{id?:integer, date?:string, state?:"PAID"|"PARTIALLY_REFUNDED"|"REFUNDED"|"UNPAID", billTo?:{company?:string?null, name?:string?null, address?:string?null, vat?:string?null}, paymentMethods?:string[], items?:{domain?:string, product?:string, type?:string, years?:integer?null, expires?:string?null, status?:"SUCCESS"|"NOT_PROCESSED"|"REFUNDED"|"REFUND"|"COUPON", price_cents?:integer, discount_cents?:integer, tags?:string[]}[], gross_cents?:integer, refunded_cents?:integer, total_cents?:integer, total?:string, currency?:string, url?:string?null, pdfUrl?:string?null, downloadUrl?:string?null, downloadExpires?:string?null}}
+## GET /account/invoicePdf/{orderId} [getInvoicePdf] scope=read agent={"safe":true,"cost":false,"destructive":false,"reversible":true,"requiresConfirmation":false}
+  params: path:orderId:integer
+  body: 
+  200: {status?:string, filename?:string, contentType?:string, sizeBytes?:integer, contentBase64?:string, downloadUrl?:string?null, downloadExpires?:string?null}
+## POST /account/topupCrypto [topupCrypto] scope=funding agent={"safe":false,"cost":false,"destructive":false,"reversible":true,"requiresConfirmation":true}
+  params: 
+  body: {amount:integer, dryRun?:boolean}
+  200: {status?:string, checkoutId?:string, amount_cents?:integer, estimatedFee_cents?:integer, estimatedCredit_cents?:integer, currency?:string, network?:string, payUrl?:string, x402Url?:string?null, expiresAt?:string?null, message?:string}
+## GET /account/topupCryptoStatus/{checkoutId} [topupCryptoStatus] scope=read agent={"safe":true,"cost":false,"destructive":false,"reversible":true,"requiresConfirmation":false}
+  params: path:checkoutId:string
+  body: 
+  200: {status?:string, checkoutId?:string, state?:"ACTIVE"|"PROCESSING"|"COMPLETED"|"EXPIRED"|"FAILED"|"DEACTIVATED", credited?:boolean, balance_cents?:integer, balance?:string}
+## POST /account/verifyPhone/send [accountVerifyPhoneSend] scope=account agent={"safe":false,"cost":false,"destructive":false,"reversible":true,"requiresConfirmation":false}
+  params: 
+  body: {channel?:"sms"|"call", dryRun?:boolean}
+  200: {status?:string, sent?:boolean, codeAlreadySent?:boolean, alreadyVerified?:boolean, channel?:string, sentTo?:string, expiresInMinutes?:integer, retryAfterSeconds?:integer, message?:string}
+## POST /account/verifyPhone/confirm [accountVerifyPhoneConfirm] scope=account agent={"safe":false,"cost":false,"destructive":false,"reversible":true,"requiresConfirmation":false}
+  params: 
+  body: {code:string}
+  200: {status?:string, verified?:boolean, alreadyVerified?:boolean, emailVerified?:boolean, message?:string}
+## POST /account/verifyEmail/send [accountVerifyEmailSend] scope=account agent={"safe":false,"cost":false,"destructive":false,"reversible":true,"requiresConfirmation":false}
+  params: 
+  body: {}
+  200: {status?:string, sent?:boolean, codeAlreadySent?:boolean, alreadyVerified?:boolean, sentTo?:string, expiresInMinutes?:integer, retryAfterSeconds?:integer, message?:string, phoneVerified?:boolean}
+## POST /account/verifyEmail/confirm [accountVerifyEmailConfirm] scope=account agent={"safe":false,"cost":false,"destructive":false,"reversible":true,"requiresConfirmation":false}
+  params: 
+  body: {code:string}
+  200: {status?:string, verified?:boolean, alreadyVerified?:boolean, message?:string, phoneVerified?:boolean}
+## POST /account/topupMpp [topupMpp] scope=funding agent={"safe":false,"cost":false,"destructive":false,"reversible":true,"requiresConfirmation":true}
+  params: 
+  body: {amount:integer, dryRun?:boolean}
+  200: {status?:string, amount_cents?:integer, payUrl?:string, expiresAt?:string, protocol?:string, methods?:string[], message?:string}
+## GET /account/apiSettings [getApiSettings] scope=read agent={"safe":true,"cost":false,"destructive":false,"reversible":true,"requiresConfirmation":false}
+  params: 
+  body: 
+  200: {status?:"SUCCESS"|"ERROR", settings?:{monthlySpendLimit?:integer?null, lowBalanceAlert?:integer?null, autoTopup?:boolean, topupThreshold?:integer?null, topupAmount?:integer?null}, monthlySpend?:integer, spendLimit?:{limit?:integer?null, source?:"account"|"default"|"none", spent?:integer, remaining?:integer?null}, topupLimit?:{limit?:integer, source?:"account"|"default", added?:integer?null}}
+## GET /webhook/eventTypes [webhookEventTypes] scope=read agent={"safe":true,"cost":false,"destructive":false,"reversible":true,"requiresConfirmation":false}
+  params: 
+  body: 
+  200: {status?:string, eventTypes?:string[]}
+## GET /webhook/list [webhookList] scope=read agent={"safe":true,"cost":false,"destructive":false,"reversible":true,"requiresConfirmation":false}
+  params: 
+  body: 
+  200: {status?:string, endpoints?:{id?:integer, url?:string, secret?:string, events?:string[], status?:"ACTIVE"|"DISABLED", consecutiveFailures?:integer, lastSuccessDate?:string?null, lastFailureDate?:string?null, lastError?:string?null, createDate?:string}[]}
+## GET /webhook/get/{id} [webhookGet] scope=read agent={"safe":true,"cost":false,"destructive":false,"reversible":true,"requiresConfirmation":false}
+  params: path:id:integer
+  body: 
+  200: {status?:string, endpoint?:{id?:integer, url?:string, secret?:string, events?:string[], status?:"ACTIVE"|"DISABLED", consecutiveFailures?:integer, lastSuccessDate?:string?null, lastFailureDate?:string?null, lastError?:string?null, createDate?:string}}
+## POST /webhook/create [webhookCreate] scope=account agent={"safe":false,"cost":false,"destructive":false,"reversible":true,"requiresConfirmation":false}
+  params: 
+  body: {url:string, events?:string[]}
+  200: {status?:string, endpoint?:{id?:integer, url?:string, secret?:string, events?:string[], status?:"ACTIVE"|"DISABLED", consecutiveFailures?:integer, lastSuccessDate?:string?null, lastFailureDate?:string?null, lastError?:string?null, createDate?:string}}
+## POST /webhook/update [webhookUpdate] scope=account agent={"safe":false,"cost":false,"destructive":false,"reversible":true,"requiresConfirmation":false}
+  params: 
+  body: {id:integer, url?:string, events?:string[], status?:"ACTIVE"|"DISABLED"}
+  200: {status?:string, endpoint?:{id?:integer, url?:string, secret?:string, events?:string[], status?:"ACTIVE"|"DISABLED", consecutiveFailures?:integer, lastSuccessDate?:string?null, lastFailureDate?:string?null, lastError?:string?null, createDate?:string}}
+## POST /webhook/rotateSecret [webhookRotateSecret] scope=account agent={"safe":false,"cost":false,"destructive":true,"reversible":false,"requiresConfirmation":true}
+  params: 
+  body: {id:integer}
+  200: {status?:string, endpoint?:{id?:integer, url?:string, secret?:string, events?:string[], status?:"ACTIVE"|"DISABLED", consecutiveFailures?:integer, lastSuccessDate?:string?null, lastFailureDate?:string?null, lastError?:string?null, createDate?:string}}
+## POST /webhook/test [webhookTest] scope=account agent={"safe":false,"cost":false,"destructive":false,"reversible":true,"requiresConfirmation":false}
+  params: 
+  body: {id:integer}
+  200: {status?:string, eventId?:string, message?:string}
+## POST /webhook/delete [webhookDelete] scope=account agent={"safe":false,"cost":false,"destructive":true,"reversible":true,"requiresConfirmation":true}
+  params: 
+  body: {id:integer}
+  200: {status?:string, message?:string}
+## GET /webhook/deliveries [webhookDeliveries] scope=read agent={"safe":true,"cost":false,"destructive":false,"reversible":true,"requiresConfirmation":false}
+  params: query:endpointId?:integer, query:status?:"PENDING"|"PROCESSING"|"DELIVERED"|"FAILED", query:start?:integer, query:limit?:integer
+  body: 
+  200: {status?:string, deliveries?:{id?:integer, endpointId?:integer, eventType?:string, eventId?:string, status?:"PENDING"|"PROCESSING"|"DELIVERED"|"FAILED", attempts?:integer, maxAttempts?:integer, httpStatus?:integer?null, lastError?:string?null, nextAttemptAt?:string, createDate?:string, deliveredDate?:string?null, payload?:{}}[], total?:integer, start?:integer, limit?:integer, message?:string}
+## GET /webhook/delivery/{id} [webhookDelivery] scope=read agent={"safe":true,"cost":false,"destructive":false,"reversible":true,"requiresConfirmation":false}
+  params: path:id:integer
+  body: 
+  200: {status?:string, delivery?:{id?:integer, endpointId?:integer, eventType?:string, eventId?:string, status?:"PENDING"|"PROCESSING"|"DELIVERED"|"FAILED", attempts?:integer, maxAttempts?:integer, httpStatus?:integer?null, lastError?:string?null, nextAttemptAt?:string, createDate?:string, deliveredDate?:string?null, payload?:{}}}
+## POST /webhook/resend [webhookResend] scope=account agent={"safe":false,"cost":false,"destructive":false,"reversible":true,"requiresConfirmation":false}
+  params: 
+  body: {id:integer}
+  200: {status?:string, delivery?:{id?:integer, endpointId?:integer, eventType?:string, eventId?:string, status?:"PENDING"|"PROCESSING"|"DELIVERED"|"FAILED", attempts?:integer, maxAttempts?:integer, httpStatus?:integer?null, lastError?:string?null, nextAttemptAt?:string, createDate?:string, deliveredDate?:string?null, payload?:{}}, message?:string}
+## GET /domain/getRegistrationRequirements/{tld} [domainGetRegistrationRequirements] scope=read agent={"safe":true,"cost":false,"destructive":false,"reversible":true,"requiresConfirmation":false}
+  params: path:tld:string
+  body: 
+  200: {status?:string, tld?:string, apiRegisterable?:boolean, registrationDurationYears?:integer, maxRegistrationYears?:integer?null, whoisPrivacySupported?:boolean, requiresValidatedAddress?:boolean, registrantOnly?:boolean, requestSchema?:{}, registryRequirements?:{}, notApiRegisterableReason?:string}
+## POST /hosting/makeDir/{domain} [hostingMakeDir] scope=hosting agent={"safe":false,"cost":false,"destructive":false,"reversible":true,"requiresConfirmation":false}
+  params: path:domain:string
+  body: {} & {path:string}
+  200: {status?:string, created?:string}
+## POST /sandbox/topup [sandboxTopup] scope=account agent={"safe":false,"cost":false,"destructive":false,"reversible":true,"requiresConfirmation":false}
+  params: 
+  body: {} & {amount?:integer}
+  200: {status?:string, granted?:integer, balance?:integer, display?:string, sandbox?:boolean}
+## POST /sandbox/reset [sandboxReset] scope=account agent={"safe":false,"cost":false,"destructive":true,"reversible":false,"requiresConfirmation":true}
+  params: 
+  body: {}
+  200: {status?:string, message?:string, domainsCleared?:integer, balance?:integer, sandbox?:boolean}
+## POST /sandbox/triggerWebhook [sandboxTriggerWebhook] scope=account agent={"safe":false,"cost":false,"destructive":false,"reversible":true,"requiresConfirmation":false}
+  params: 
+  body: {} & {eventType:"domain.registered"|"domain.renewed"|"domain.transfer.completed"|"domain.expiring"|"dns.record.created"|"dns.record.updated"|"dns.record.deleted", domain?:string}
+  200: {status?:string, event?:string, data?:{}, endpointsRegistered?:integer, message?:string, sandbox?:boolean}
+## GET /mock [mockDirectory] scope=read agent={"safe":true,"cost":false,"destructive":false,"reversible":true,"requiresConfirmation":false}
+  params: 
+  body: 
+  200: {status?:string, mock?:boolean, count?:integer, endpoints?:{method?:string, path?:string, summary?:string, mockUrl?:string}[]}
+## GET /mock/{path} [mockEndpoint] scope=read agent={"safe":true,"cost":false,"destructive":false,"reversible":true,"requiresConfirmation":false}
+  params: path:path:string, query:status?:"error"
+  body: 
+  200: {}
+## POST /hosting/createWpCredentials/{domain} [hostingCreateWpCredentials] scope=hosting agent={"safe":false,"cost":false,"destructive":false,"reversible":true,"requiresConfirmation":true}
+  params: path:domain:string
+  body: {} & {role?:"editor"|"administrator", acknowledgeFullAccess?:boolean, name?:string, dryRun?:boolean}
+  200: {status?:string, credentials?:{username?:string, applicationPassword?:string, role?:string, name?:string, restUrl?:string, authorization?:string}, message?:string}
+## GET /hosting/getWpCredentials/{domain} [hostingGetWpCredentials] scope=read agent={"safe":true,"cost":false,"destructive":false,"reversible":true,"requiresConfirmation":false}
+  params: path:domain:string, query:wpUser?:string
+  body: 
+  200: {status?:string, wpUser?:string, credentials?:{}[]}
+## POST /hosting/deleteWpCredentials/{domain} [hostingDeleteWpCredentials] scope=hosting agent={"safe":false,"cost":false,"destructive":true,"reversible":false,"requiresConfirmation":true}
+  params: path:domain:string
+  body: {} & {uuid?:string, all?:boolean, wpUser?:string, dryRun?:boolean}
+  200: {status?:string, revoked?:string, message?:string}
+## GET /cloudflare/getConnection [cloudflareGetConnection] scope=read agent={"safe":true,"cost":"none","destructive":false,"reversible":true,"requiresConfirmation":false}
+  params: 
+  body: 
+  200: {}
+## GET /cloudflare/inventory [cloudflareInventory] scope=read agent={"safe":true,"cost":"none","destructive":false,"reversible":true,"requiresConfirmation":false}
+  params: 
+  body: 
+  200: {}
+## POST /cloudflare/connect [cloudflareConnect] scope=domains agent={"safe":false,"cost":"none","destructive":false,"reversible":true,"requiresConfirmation":true}
+  params: 
+  body: {domains:string[], dryRun?:boolean}
+  200: {}
+## GET /cloudflare/getQueue [cloudflareGetQueue] scope=read agent={"safe":true,"cost":"none","destructive":false,"reversible":true,"requiresConfirmation":false}
+  params: 
+  body: 
+  200: {}
+## GET /cloudflare/get/{domain} [cloudflareGet] scope=read agent={"safe":true,"cost":"none","destructive":false,"reversible":true,"requiresConfirmation":false}
+  params: path:domain:string
+  body: 
+  200: {}
+## POST /cloudflare/retry/{domain} [cloudflareRetry] scope=domains agent={"safe":false,"cost":"none","destructive":false,"reversible":true,"requiresConfirmation":true}
+  params: path:domain:string
+  body: 
+  200: {}
+## POST /cloudflare/rollback/{domain} [cloudflareRollback] scope=domains agent={"safe":false,"cost":"none","destructive":false,"reversible":true,"requiresConfirmation":true}
+  params: path:domain:string
+  body: 
+  200: {}
+## POST /cloudflare/disconnect [cloudflareDisconnect] scope=domains agent={"safe":false,"cost":"none","destructive":true,"reversible":true,"requiresConfirmation":true}
+  params: 
+  body: 
+  200: {}
+## POST /cloudflare/setProxy/{domain} [cloudflareSetProxy] scope=dns agent={"safe":false,"cost":"none","destructive":false,"reversible":true,"requiresConfirmation":true}
+  params: path:domain:string
+  body: {enabled:boolean, records?:string[], dryRun?:boolean}
+  200: {}
+## GET /cloudflare/getRecords/{domain} [cloudflareGetRecords] scope=read agent={"safe":true,"cost":"none","destructive":false,"reversible":true,"requiresConfirmation":false}
+  params: path:domain:string
+  body: 
+  200: {}
+## GET /cloudflare/preview/{domain} [cloudflarePreview] scope=read agent={"safe":true,"cost":"none","destructive":false,"reversible":true,"requiresConfirmation":false}
+  params: path:domain:string
+  body: 
+  200: {}
+## GET /cloudflare/getZone/{domain} [cloudflareGetZone] scope=read agent={"safe":true,"cost":"none","destructive":false,"reversible":true,"requiresConfirmation":false}
+  params: path:domain:string
+  body: 
+  200: {}
+## GET /cloudflare/getZoneSettings/{domain} [cloudflareGetZoneSettings] scope=read agent={"safe":true,"cost":"none","destructive":false,"reversible":true,"requiresConfirmation":false}
+  params: path:domain:string
+  body: 
+  200: {}
+## POST /cloudflare/setZoneSettings/{domain} [cloudflareSetZoneSettings] scope=dns agent={"safe":false,"cost":"none","destructive":false,"reversible":true,"requiresConfirmation":true}
+  params: path:domain:string
+  body: {ssl?:"off"|"flexible"|"full"|"strict", always_use_https?:"on"|"off", automatic_https_rewrites?:"on"|"off", min_tls_version?:"1.0"|"1.1"|"1.2"|"1.3", development_mode?:"on"|"off", cache_level?:"aggressive"|"basic"|"simplified", dryRun?:boolean}
+  200: {}
+## POST /cloudflare/createRecord/{domain} [cloudflareCreateRecord] scope=dns agent={"safe":false,"cost":"none","destructive":false,"reversible":true,"requiresConfirmation":true}
+  params: path:domain:string
+  body: {type:string, name?:string, content?:string, ttl?:integer, priority?:integer, proxied?:boolean, comment?:string, data?:{}, dryRun?:boolean}
+  200: {}
+## POST /cloudflare/editRecord/{domain}/{recordId} [cloudflareEditRecord] scope=dns agent={"safe":false,"cost":"none","destructive":false,"reversible":true,"requiresConfirmation":true}
+  params: path:domain:string, path:recordId:string
+  body: {type?:string, name?:string, content?:string, ttl?:integer, priority?:integer, proxied?:boolean, comment?:string, data?:{}, dryRun?:boolean}
+  200: {}
+## POST /cloudflare/deleteRecord/{domain}/{recordId} [cloudflareDeleteRecord] scope=dns agent={"safe":false,"cost":"none","destructive":true,"reversible":false,"requiresConfirmation":true}
+  params: path:domain:string, path:recordId:string
+  body: {dryRun?:boolean}
+  200: {}
+## GET /linkinbio/get/{domain} [linkInBioGet] scope=read agent={"safe":true,"cost":false,"destructive":false,"reversible":true,"requiresConfirmation":false}
+  params: path:domain:string
+  body: {}
+  200: {status?:string, linkInBio?:{domain?:string, url?:string, delivery?:"domain"|"l.ink", plan?:{sku?:string, name?:string, free?:boolean, price?:integer, interval?:string?null}, status?:string, isTrial?:boolean, expireDate?:string?null, features?:{maxLinks?:integer, scheduling?:boolean, animation?:boolean, passcodeProtection?:boolean, analyticsIds?:boolean, utmParameters?:boolean, mailingList?:boolean}, linkCount?:integer, profile?:{title?:string?null, bio?:string?null, avatarUrl?:string?null}, links?:{id?:integer, type?:"link"|"featured"|"category", title?:string, url?:string?null, enabled?:boolean, position?:integer, startDate?:string?null, endDate?:string?null, animation?:"pulse"|"bounce"|"shake", protection?:{…}, imageUrl?:string?null}[], socials?:{location?:"top"|"bottom", email?:string?null, instagram?:string?null, facebook?:string?null, tiktok?:string?null, youtube?:string?null, twitter?:string?null, linkedin?:string?null}, appearance?:{preset?:string?null, fontFamily?:string?null, buttonStyle?:string?null, radius?:integer?null, pageBackgroundMode?:string?null, textAlign?:string?null, pageBackgroundColor?:string?null, pageBackgroundColor2?:string?null, pageColor?:string?null, boxBackgroundColor?:string?null, borderColor?:string?null}, settings?:{sensitiveContent?:string?null, analytics?:{…}, mailingList?:{…}}, editorUrl?:string}}
+## POST /linkinbio/get/{domain} [linkInBioGetPost] scope=read agent={"safe":true,"cost":false,"destructive":false,"reversible":true,"requiresConfirmation":false}
+  params: path:domain:string
+  body: {}
+  200: {status?:string, linkInBio?:{domain?:string, url?:string, delivery?:"domain"|"l.ink", plan?:{sku?:string, name?:string, free?:boolean, price?:integer, interval?:string?null}, status?:string, isTrial?:boolean, expireDate?:string?null, features?:{maxLinks?:integer, scheduling?:boolean, animation?:boolean, passcodeProtection?:boolean, analyticsIds?:boolean, utmParameters?:boolean, mailingList?:boolean}, linkCount?:integer, profile?:{title?:string?null, bio?:string?null, avatarUrl?:string?null}, links?:{id?:integer, type?:"link"|"featured"|"category", title?:string, url?:string?null, enabled?:boolean, position?:integer, startDate?:string?null, endDate?:string?null, animation?:"pulse"|"bounce"|"shake", protection?:{…}, imageUrl?:string?null}[], socials?:{location?:"top"|"bottom", email?:string?null, instagram?:string?null, facebook?:string?null, tiktok?:string?null, youtube?:string?null, twitter?:string?null, linkedin?:string?null}, appearance?:{preset?:string?null, fontFamily?:string?null, buttonStyle?:string?null, radius?:integer?null, pageBackgroundMode?:string?null, textAlign?:string?null, pageBackgroundColor?:string?null, pageBackgroundColor2?:string?null, pageColor?:string?null, boxBackgroundColor?:string?null, borderColor?:string?null}, settings?:{sensitiveContent?:string?null, analytics?:{…}, mailingList?:{…}}, editorUrl?:string}}
+## POST /linkinbio/create/{domain} [linkInBioCreate] scope=hosting agent={"safe":false,"cost":false,"destructive":false,"reversible":true,"requiresConfirmation":false}
+  params: path:domain:string
+  body: {agreeToNameserverChange?:boolean}
+  200: {status?:string, linkInBio?:{domain?:string, url?:string, delivery?:"domain"|"l.ink", plan?:{sku?:string, name?:string, free?:boolean, price?:integer, interval?:string?null}, status?:string, isTrial?:boolean, expireDate?:string?null, features?:{maxLinks?:integer, scheduling?:boolean, animation?:boolean, passcodeProtection?:boolean, analyticsIds?:boolean, utmParameters?:boolean, mailingList?:boolean}, linkCount?:integer, profile?:{title?:string?null, bio?:string?null, avatarUrl?:string?null}, links?:{id?:integer, type?:"link"|"featured"|"category", title?:string, url?:string?null, enabled?:boolean, position?:integer, startDate?:string?null, endDate?:string?null, animation?:"pulse"|"bounce"|"shake", protection?:{…}, imageUrl?:string?null}[], socials?:{location?:"top"|"bottom", email?:string?null, instagram?:string?null, facebook?:string?null, tiktok?:string?null, youtube?:string?null, twitter?:string?null, linkedin?:string?null}, appearance?:{preset?:string?null, fontFamily?:string?null, buttonStyle?:string?null, radius?:integer?null, pageBackgroundMode?:string?null, textAlign?:string?null, pageBackgroundColor?:string?null, pageBackgroundColor2?:string?null, pageColor?:string?null, boxBackgroundColor?:string?null, borderColor?:string?null}, settings?:{sensitiveContent?:string?null, analytics?:{…}, mailingList?:{…}}, editorUrl?:string}}
+## POST /linkinbio/updateProfile/{domain} [linkInBioUpdateProfile] scope=hosting agent={"safe":false,"cost":false,"destructive":false,"reversible":true,"requiresConfirmation":false}
+  params: path:domain:string
+  body: {title?:string, bio?:string, avatar?:string?null}
+  200: {status?:string, linkInBio?:{domain?:string, url?:string, delivery?:"domain"|"l.ink", plan?:{sku?:string, name?:string, free?:boolean, price?:integer, interval?:string?null}, status?:string, isTrial?:boolean, expireDate?:string?null, features?:{maxLinks?:integer, scheduling?:boolean, animation?:boolean, passcodeProtection?:boolean, analyticsIds?:boolean, utmParameters?:boolean, mailingList?:boolean}, linkCount?:integer, profile?:{title?:string?null, bio?:string?null, avatarUrl?:string?null}, links?:{id?:integer, type?:"link"|"featured"|"category", title?:string, url?:string?null, enabled?:boolean, position?:integer, startDate?:string?null, endDate?:string?null, animation?:"pulse"|"bounce"|"shake", protection?:{…}, imageUrl?:string?null}[], socials?:{location?:"top"|"bottom", email?:string?null, instagram?:string?null, facebook?:string?null, tiktok?:string?null, youtube?:string?null, twitter?:string?null, linkedin?:string?null}, appearance?:{preset?:string?null, fontFamily?:string?null, buttonStyle?:string?null, radius?:integer?null, pageBackgroundMode?:string?null, textAlign?:string?null, pageBackgroundColor?:string?null, pageBackgroundColor2?:string?null, pageColor?:string?null, boxBackgroundColor?:string?null, borderColor?:string?null}, settings?:{sensitiveContent?:string?null, analytics?:{…}, mailingList?:{…}}, editorUrl?:string}}
+## POST /linkinbio/addLink/{domain} [linkInBioAddLink] scope=hosting agent={"safe":false,"cost":false,"destructive":false,"reversible":true,"requiresConfirmation":false}
+  params: path:domain:string
+  body: {type?:"link"|"featured"|"category", title:string, url?:string, enabled?:boolean, startDate?:string?null, endDate?:string?null, animation?:"pulse"|"bounce"|"shake", protection?:{type?:"code"|"birthday"|"sensitive", value?:string, explanation?:string}, position?:"bottom"|"top"}
+  200: {status?:string, link?:{id?:integer, type?:"link"|"featured"|"category", title?:string, url?:string?null, enabled?:boolean, position?:integer, startDate?:string?null, endDate?:string?null, animation?:"pulse"|"bounce"|"shake", protection?:{type?:"code"|"birthday"|"sensitive", value?:string?null, explanation?:string?null}, imageUrl?:string?null}, linkInBio?:{domain?:string, url?:string, delivery?:"domain"|"l.ink", plan?:{sku?:string, name?:string, free?:boolean, price?:integer, interval?:string?null}, status?:string, isTrial?:boolean, expireDate?:string?null, features?:{maxLinks?:integer, scheduling?:boolean, animation?:boolean, passcodeProtection?:boolean, analyticsIds?:boolean, utmParameters?:boolean, mailingList?:boolean}, linkCount?:integer, profile?:{title?:string?null, bio?:string?null, avatarUrl?:string?null}, links?:{id?:integer, type?:"link"|"featured"|"category", title?:string, url?:string?null, enabled?:boolean, position?:integer, startDate?:string?null, endDate?:string?null, animation?:"pulse"|"bounce"|"shake", protection?:{…}, imageUrl?:string?null}[], socials?:{location?:"top"|"bottom", email?:string?null, instagram?:string?null, facebook?:string?null, tiktok?:string?null, youtube?:string?null, twitter?:string?null, linkedin?:string?null}, appearance?:{preset?:string?null, fontFamily?:string?null, buttonStyle?:string?null, radius?:integer?null, pageBackgroundMode?:string?null, textAlign?:string?null, pageBackgroundColor?:string?null, pageBackgroundColor2?:string?null, pageColor?:string?null, boxBackgroundColor?:string?null, borderColor?:string?null}, settings?:{sensitiveContent?:string?null, analytics?:{…}, mailingList?:{…}}, editorUrl?:string}}
+## POST /linkinbio/editLink/{domain} [linkInBioEditLink] scope=hosting agent={"safe":false,"cost":false,"destructive":false,"reversible":true,"requiresConfirmation":false}
+  params: path:domain:string
+  body: {type?:"link"|"featured"|"category", title?:string, url?:string, enabled?:boolean, startDate?:string?null, endDate?:string?null, animation?:"pulse"|"bounce"|"shake", protection?:{type?:"code"|"birthday"|"sensitive", value?:string, explanation?:string}, id:integer}
+  200: {status?:string, link?:{id?:integer, type?:"link"|"featured"|"category", title?:string, url?:string?null, enabled?:boolean, position?:integer, startDate?:string?null, endDate?:string?null, animation?:"pulse"|"bounce"|"shake", protection?:{type?:"code"|"birthday"|"sensitive", value?:string?null, explanation?:string?null}, imageUrl?:string?null}, linkInBio?:{domain?:string, url?:string, delivery?:"domain"|"l.ink", plan?:{sku?:string, name?:string, free?:boolean, price?:integer, interval?:string?null}, status?:string, isTrial?:boolean, expireDate?:string?null, features?:{maxLinks?:integer, scheduling?:boolean, animation?:boolean, passcodeProtection?:boolean, analyticsIds?:boolean, utmParameters?:boolean, mailingList?:boolean}, linkCount?:integer, profile?:{title?:string?null, bio?:string?null, avatarUrl?:string?null}, links?:{id?:integer, type?:"link"|"featured"|"category", title?:string, url?:string?null, enabled?:boolean, position?:integer, startDate?:string?null, endDate?:string?null, animation?:"pulse"|"bounce"|"shake", protection?:{…}, imageUrl?:string?null}[], socials?:{location?:"top"|"bottom", email?:string?null, instagram?:string?null, facebook?:string?null, tiktok?:string?null, youtube?:string?null, twitter?:string?null, linkedin?:string?null}, appearance?:{preset?:string?null, fontFamily?:string?null, buttonStyle?:string?null, radius?:integer?null, pageBackgroundMode?:string?null, textAlign?:string?null, pageBackgroundColor?:string?null, pageBackgroundColor2?:string?null, pageColor?:string?null, boxBackgroundColor?:string?null, borderColor?:string?null}, settings?:{sensitiveContent?:string?null, analytics?:{…}, mailingList?:{…}}, editorUrl?:string}}
+## POST /linkinbio/deleteLink/{domain} [linkInBioDeleteLink] scope=hosting agent={"safe":false,"cost":false,"destructive":true,"reversible":false,"requiresConfirmation":true}
+  params: path:domain:string
+  body: {id:integer}
+  200: {status?:string, linkInBio?:{domain?:string, url?:string, delivery?:"domain"|"l.ink", plan?:{sku?:string, name?:string, free?:boolean, price?:integer, interval?:string?null}, status?:string, isTrial?:boolean, expireDate?:string?null, features?:{maxLinks?:integer, scheduling?:boolean, animation?:boolean, passcodeProtection?:boolean, analyticsIds?:boolean, utmParameters?:boolean, mailingList?:boolean}, linkCount?:integer, profile?:{title?:string?null, bio?:string?null, avatarUrl?:string?null}, links?:{id?:integer, type?:"link"|"featured"|"category", title?:string, url?:string?null, enabled?:boolean, position?:integer, startDate?:string?null, endDate?:string?null, animation?:"pulse"|"bounce"|"shake", protection?:{…}, imageUrl?:string?null}[], socials?:{location?:"top"|"bottom", email?:string?null, instagram?:string?null, facebook?:string?null, tiktok?:string?null, youtube?:string?null, twitter?:string?null, linkedin?:string?null}, appearance?:{preset?:string?null, fontFamily?:string?null, buttonStyle?:string?null, radius?:integer?null, pageBackgroundMode?:string?null, textAlign?:string?null, pageBackgroundColor?:string?null, pageBackgroundColor2?:string?null, pageColor?:string?null, boxBackgroundColor?:string?null, borderColor?:string?null}, settings?:{sensitiveContent?:string?null, analytics?:{…}, mailingList?:{…}}, editorUrl?:string}}
+## POST /linkinbio/reorderLinks/{domain} [linkInBioReorderLinks] scope=hosting agent={"safe":false,"cost":false,"destructive":false,"reversible":true,"requiresConfirmation":false}
+  params: path:domain:string
+  body: {ids:integer[]}
+  200: {status?:string, linkInBio?:{domain?:string, url?:string, delivery?:"domain"|"l.ink", plan?:{sku?:string, name?:string, free?:boolean, price?:integer, interval?:string?null}, status?:string, isTrial?:boolean, expireDate?:string?null, features?:{maxLinks?:integer, scheduling?:boolean, animation?:boolean, passcodeProtection?:boolean, analyticsIds?:boolean, utmParameters?:boolean, mailingList?:boolean}, linkCount?:integer, profile?:{title?:string?null, bio?:string?null, avatarUrl?:string?null}, links?:{id?:integer, type?:"link"|"featured"|"category", title?:string, url?:string?null, enabled?:boolean, position?:integer, startDate?:string?null, endDate?:string?null, animation?:"pulse"|"bounce"|"shake", protection?:{…}, imageUrl?:string?null}[], socials?:{location?:"top"|"bottom", email?:string?null, instagram?:string?null, facebook?:string?null, tiktok?:string?null, youtube?:string?null, twitter?:string?null, linkedin?:string?null}, appearance?:{preset?:string?null, fontFamily?:string?null, buttonStyle?:string?null, radius?:integer?null, pageBackgroundMode?:string?null, textAlign?:string?null, pageBackgroundColor?:string?null, pageBackgroundColor2?:string?null, pageColor?:string?null, boxBackgroundColor?:string?null, borderColor?:string?null}, settings?:{sensitiveContent?:string?null, analytics?:{…}, mailingList?:{…}}, editorUrl?:string}}
+## POST /linkinbio/updateSocials/{domain} [linkInBioUpdateSocials] scope=hosting agent={"safe":false,"cost":false,"destructive":false,"reversible":true,"requiresConfirmation":false}
+  params: path:domain:string
+  body: {location?:"top"|"bottom", socials?:{[k]:string?null}}
+  200: {status?:string, linkInBio?:{domain?:string, url?:string, delivery?:"domain"|"l.ink", plan?:{sku?:string, name?:string, free?:boolean, price?:integer, interval?:string?null}, status?:string, isTrial?:boolean, expireDate?:string?null, features?:{maxLinks?:integer, scheduling?:boolean, animation?:boolean, passcodeProtection?:boolean, analyticsIds?:boolean, utmParameters?:boolean, mailingList?:boolean}, linkCount?:integer, profile?:{title?:string?null, bio?:string?null, avatarUrl?:string?null}, links?:{id?:integer, type?:"link"|"featured"|"category", title?:string, url?:string?null, enabled?:boolean, position?:integer, startDate?:string?null, endDate?:string?null, animation?:"pulse"|"bounce"|"shake", protection?:{…}, imageUrl?:string?null}[], socials?:{location?:"top"|"bottom", email?:string?null, instagram?:string?null, facebook?:string?null, tiktok?:string?null, youtube?:string?null, twitter?:string?null, linkedin?:string?null}, appearance?:{preset?:string?null, fontFamily?:string?null, buttonStyle?:string?null, radius?:integer?null, pageBackgroundMode?:string?null, textAlign?:string?null, pageBackgroundColor?:string?null, pageBackgroundColor2?:string?null, pageColor?:string?null, boxBackgroundColor?:string?null, borderColor?:string?null}, settings?:{sensitiveContent?:string?null, analytics?:{…}, mailingList?:{…}}, editorUrl?:string}}
+## POST /linkinbio/updateAppearance/{domain} [linkInBioUpdateAppearance] scope=hosting agent={"safe":false,"cost":false,"destructive":false,"reversible":true,"requiresConfirmation":false}
+  params: path:domain:string
+  body: {preset?:"classic"|"ocean"|"midnight"|"paper"|"forest"|"sunset", fontFamily?:"inter"|"poppins"|"lora"|"mono"|"serif", buttonStyle?:"classic"|"pill"|"floating"|"hardShadow", radius?:integer, pageBackgroundMode?:"solid"|"gradient", textAlign?:"left"|"center"|"right", pageBackgroundColor?:string, pageBackgroundColor2?:string, pageColor?:string, boxBackgroundColor?:string, borderColor?:string}
+  200: {status?:string, linkInBio?:{domain?:string, url?:string, delivery?:"domain"|"l.ink", plan?:{sku?:string, name?:string, free?:boolean, price?:integer, interval?:string?null}, status?:string, isTrial?:boolean, expireDate?:string?null, features?:{maxLinks?:integer, scheduling?:boolean, animation?:boolean, passcodeProtection?:boolean, analyticsIds?:boolean, utmParameters?:boolean, mailingList?:boolean}, linkCount?:integer, profile?:{title?:string?null, bio?:string?null, avatarUrl?:string?null}, links?:{id?:integer, type?:"link"|"featured"|"category", title?:string, url?:string?null, enabled?:boolean, position?:integer, startDate?:string?null, endDate?:string?null, animation?:"pulse"|"bounce"|"shake", protection?:{…}, imageUrl?:string?null}[], socials?:{location?:"top"|"bottom", email?:string?null, instagram?:string?null, facebook?:string?null, tiktok?:string?null, youtube?:string?null, twitter?:string?null, linkedin?:string?null}, appearance?:{preset?:string?null, fontFamily?:string?null, buttonStyle?:string?null, radius?:integer?null, pageBackgroundMode?:string?null, textAlign?:string?null, pageBackgroundColor?:string?null, pageBackgroundColor2?:string?null, pageColor?:string?null, boxBackgroundColor?:string?null, borderColor?:string?null}, settings?:{sensitiveContent?:string?null, analytics?:{…}, mailingList?:{…}}, editorUrl?:string}}
+## POST /linkinbio/updateSettings/{domain} [linkInBioUpdateSettings] scope=hosting agent={"safe":false,"cost":false,"destructive":false,"reversible":true,"requiresConfirmation":false}
+  params: path:domain:string
+  body: {sensitiveContent?:"generic"|"18"|"21"|"25", analytics?:{[k]:string}}
+  200: {status?:string, linkInBio?:{domain?:string, url?:string, delivery?:"domain"|"l.ink", plan?:{sku?:string, name?:string, free?:boolean, price?:integer, interval?:string?null}, status?:string, isTrial?:boolean, expireDate?:string?null, features?:{maxLinks?:integer, scheduling?:boolean, animation?:boolean, passcodeProtection?:boolean, analyticsIds?:boolean, utmParameters?:boolean, mailingList?:boolean}, linkCount?:integer, profile?:{title?:string?null, bio?:string?null, avatarUrl?:string?null}, links?:{id?:integer, type?:"link"|"featured"|"category", title?:string, url?:string?null, enabled?:boolean, position?:integer, startDate?:string?null, endDate?:string?null, animation?:"pulse"|"bounce"|"shake", protection?:{…}, imageUrl?:string?null}[], socials?:{location?:"top"|"bottom", email?:string?null, instagram?:string?null, facebook?:string?null, tiktok?:string?null, youtube?:string?null, twitter?:string?null, linkedin?:string?null}, appearance?:{preset?:string?null, fontFamily?:string?null, buttonStyle?:string?null, radius?:integer?null, pageBackgroundMode?:string?null, textAlign?:string?null, pageBackgroundColor?:string?null, pageBackgroundColor2?:string?null, pageColor?:string?null, boxBackgroundColor?:string?null, borderColor?:string?null}, settings?:{sensitiveContent?:string?null, analytics?:{…}, mailingList?:{…}}, editorUrl?:string}}
+## POST /hosting/updateAutoRenew/{domain} [hostingUpdateAutoRenew] scope=hosting agent={"safe":false,"cost":false,"destructive":false,"reversible":true,"requiresConfirmation":true}
+  params: path:domain:string
+  body: {autoRenew:boolean}
+  200: {status?:string, domain?:string, product?:string, autoRenew?:boolean, isTrial?:boolean, expireDate?:string, cost?:{amount?:integer, formatted?:string, interval?:string}, message?:string}
+## POST /hosting/setPhpVersion/{domain} [hostingSetPhpVersion] scope=hosting agent={"safe":false,"cost":false,"destructive":false,"reversible":true,"requiresConfirmation":true}
+  params: path:domain:string
+  body: {version:string}
+  200: {status?:string, domain?:string, message?:string}
+## POST /hosting/setWordPressVersion/{domain} [hostingSetWordPressVersion] scope=hosting agent={"safe":false,"cost":false,"destructive":false,"reversible":true,"requiresConfirmation":true}
+  params: path:domain:string
+  body: {version:"latest"|"previous"}
+  200: {status?:string, domain?:string, message?:string}
+## POST /hosting/reissueSsl/{domain} [hostingReissueSsl] scope=hosting agent={"safe":false,"cost":false,"destructive":false,"reversible":true,"requiresConfirmation":false}
+  params: path:domain:string
+  body: {}
+  200: {status?:string, domain?:string, message?:string}
+## POST /hosting/setSearchVisibility/{domain} [hostingSetSearchVisibility] scope=hosting agent={"safe":false,"cost":false,"destructive":false,"reversible":true,"requiresConfirmation":true}
+  params: path:domain:string
+  body: {visible:boolean}
+  200: {status?:string, domain?:string, message?:string}
+## GET /hosting/backups/{domain} [hostingBackupsGet] scope=read agent={"safe":true,"cost":false,"destructive":false,"reversible":true,"requiresConfirmation":false}
+  params: path:domain:string, query:staging?:boolean, query:limit?:integer, query:type?:"files"|"database"
+  body: 
+  200: {status?:string, domain?:string, target?:"live"|"staging", backups?:{id?:string, type?:"files"|"database", onDemand?:boolean, createdAt?:string, bytes?:integer?null}[], count?:integer, total?:integer, retention?:string, message?:string}
+## POST /hosting/backups/{domain} [hostingBackups] scope=read agent={"safe":true,"cost":false,"destructive":false,"reversible":true,"requiresConfirmation":false}
+  params: path:domain:string
+  body: {staging?:boolean, limit?:integer, type?:"files"|"database"}
+  200: {status?:string, domain?:string, target?:"live"|"staging", backups?:{id?:string, type?:"files"|"database", onDemand?:boolean, createdAt?:string, bytes?:integer?null}[], count?:integer, total?:integer, retention?:string, message?:string}
+## POST /hosting/createBackup/{domain} [hostingCreateBackup] scope=hosting agent={"safe":false,"cost":false,"destructive":false,"reversible":true,"requiresConfirmation":false}
+  params: path:domain:string
+  body: {staging?:boolean}
+  200: {status?:string, domain?:string, message?:string}
+## POST /hosting/deleteBackup/{domain} [hostingDeleteBackup] scope=hosting agent={"safe":false,"cost":false,"destructive":true,"reversible":false,"requiresConfirmation":true}
+  params: path:domain:string
+  body: {staging?:boolean, id:string}
+  200: {status?:string, domain?:string, message?:string}
+## POST /hosting/restoreBackup/{domain} [hostingRestoreBackup] scope=hosting agent={"safe":false,"cost":false,"destructive":true,"reversible":false,"requiresConfirmation":true}
+  params: path:domain:string
+  body: {staging?:boolean, fsId:string, dbId:string}
+  200: {status?:string, domain?:string, target?:string, operation?:{id?:integer, type?:string, state?:string}, message?:string}
+## GET /hosting/getStaging/{domain} [hostingGetStagingGet] scope=hosting agent={"safe":true,"cost":false,"destructive":false,"reversible":true,"requiresConfirmation":false}
+  params: path:domain:string
+  body: 
+  200: {status?:string, domain?:string, staging?:{url?:string?null, status?:string, operation?:string?null, operationState?:string?null, builtFromBackup?:{files?:string, database?:string}, passwordProtection?:{enabled?:boolean, password?:string?null}, outbound?:{guardInstalled?:boolean, blockEmail?:boolean?null, blockApiRequests?:boolean?null}, environment?:string, ssl?:{issued?:boolean}, createdAt?:string}}
+## POST /hosting/getStaging/{domain} [hostingGetStaging] scope=hosting agent={"safe":true,"cost":false,"destructive":false,"reversible":true,"requiresConfirmation":false}
+  params: path:domain:string
+  body: {}
+  200: {status?:string, domain?:string, staging?:{url?:string?null, status?:string, operation?:string?null, operationState?:string?null, builtFromBackup?:{files?:string, database?:string}, passwordProtection?:{enabled?:boolean, password?:string?null}, outbound?:{guardInstalled?:boolean, blockEmail?:boolean?null, blockApiRequests?:boolean?null}, environment?:string, ssl?:{issued?:boolean}, createdAt?:string}}
+## POST /hosting/createStaging/{domain} [hostingCreateStaging] scope=hosting agent={"safe":false,"cost":false,"destructive":false,"reversible":true,"requiresConfirmation":false}
+  params: path:domain:string
+  body: {fsId?:string, dbId?:string}
+  200: {status?:string, domain?:string, staging?:{url?:string?null, status?:string, operation?:string?null, operationState?:string?null, builtFromBackup?:{files?:string, database?:string}, passwordProtection?:{enabled?:boolean, password?:string?null}, outbound?:{guardInstalled?:boolean, blockEmail?:boolean?null, blockApiRequests?:boolean?null}, environment?:string, ssl?:{issued?:boolean}, createdAt?:string}, message?:string}
+## POST /hosting/resetStaging/{domain} [hostingResetStaging] scope=hosting agent={"safe":false,"cost":false,"destructive":true,"reversible":false,"requiresConfirmation":true}
+  params: path:domain:string
+  body: {fsId?:string, dbId?:string}
+  200: {status?:string, domain?:string, operation?:{type?:string, state?:string}, message?:string}
+## POST /hosting/publishStaging/{domain} [hostingPublishStaging] scope=hosting agent={"safe":false,"cost":false,"destructive":true,"reversible":true,"requiresConfirmation":true}
+  params: path:domain:string
+  body: {}
+  200: {status?:string, domain?:string, operation?:{type?:string, state?:string}, message?:string}
+## POST /hosting/deleteStaging/{domain} [hostingDeleteStaging] scope=hosting agent={"safe":false,"cost":false,"destructive":true,"reversible":false,"requiresConfirmation":true}
+  params: path:domain:string
+  body: {}
+  200: {status?:string, domain?:string, operation?:{type?:string, state?:string}, message?:string}
+## POST /hosting/setStagingGate/{domain} [hostingSetStagingGate] scope=hosting agent={"safe":false,"cost":false,"destructive":false,"reversible":true,"requiresConfirmation":true}
+  params: path:domain:string
+  body: {enabled?:boolean, password?:string}
+  200: {status?:string, domain?:string, passwordProtection?:{enabled?:boolean, password?:string}, message?:string}
+## POST /hosting/setStagingGuard/{domain} [hostingSetStagingGuard] scope=hosting agent={"safe":false,"cost":false,"destructive":false,"reversible":true,"requiresConfirmation":true}
+  params: path:domain:string
+  body: {blockEmail?:boolean, blockApiRequests?:boolean}
+  200: {status?:string, domain?:string, operation?:{type?:string, state?:string}, message?:string}
+## POST /hosting/setStagingEnvironment/{domain} [hostingSetStagingEnvironment] scope=hosting agent={"safe":false,"cost":false,"destructive":false,"reversible":true,"requiresConfirmation":true}
+  params: path:domain:string
+  body: {type:"staging"|"production"}
+  200: {status?:string, domain?:string, operation?:{type?:string, state?:string}, message?:string}
+## POST /apikey/revoke [apikeyRevoke] scope=read agent={"safe":false,"cost":false,"destructive":true,"reversible":false,"requiresConfirmation":true}
+  params: 
+  body: {confirm:"revoke"}
+  200: {status?:string, revoked?:{title?:string, connectedApp?:boolean}, message?:string}

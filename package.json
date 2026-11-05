@@ -1,0 +1,84 @@
+{
+  "name": "@adaptive-ds/porkbun-client",
+  "version": "0.1.0",
+  "scripts": {
+    "build": "rm -rf ./dist && bun tsc -p ./tsconfig.lib.json && chmod +x ./dist/cli.js",
+    "check": "bun tsc --noEmit",
+    "format": "biome format --write src package.json tsconfig.json tsconfig.lib.json biome.json",
+    "test": "bun test src",
+    "test:e2e": "bun run build && bun test ./e2e/*.e2e.ts",
+    "test:w": "bun test --watch",
+    "release": "bash ./ops/release.sh",
+    "update": "bun update",
+    "clean": "rm -rf ./dist",
+    "reset": "rm -rf ./node_modules",
+    "lint": "biome check src e2e"
+  },
+  "peerDependencies": {
+    "@adaptive-ds/result": "^0.6.0",
+    "valibot": "^1.2.0"
+  },
+  "devDependencies": {
+    "@adaptive-ds/result": "^0.6.0",
+    "@biomejs/biome": "^2.6.5",
+    "@types/bun": "^1.4.4",
+    "typescript": "^7.0.2",
+    "valibot": "^1.2.0"
+  },
+  "imports": {
+    "#result": "@adaptive-ds/result"
+  },
+  "type": "module",
+  "main": "dist/index.js",
+  "bin": {
+    "porkbun": "./dist/cli.js"
+  },
+  "private": false,
+  "license": "MIT",
+  "description": "Fully typed, Result-based TypeScript client and CLI for the Porkbun API v3 (domains, DNS, SSL, email, hosting, webhooks, Cloudflare, …).",
+  "keywords": [
+    "porkbun",
+    "dns",
+    "domains",
+    "registrar",
+    "api-client",
+    "cli",
+    "typescript",
+    "valibot",
+    "result",
+    "ssl",
+    "dynamic-dns"
+  ],
+  "homepage": "https://github.com/david1gp/porkbun-client",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/david1gp/porkbun-client.git"
+  },
+  "bugs": {
+    "url": "https://github.com/david1gp/porkbun-client/issues"
+  },
+  "types": "./dist/index.d.ts",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.js"
+    },
+    "./*": {
+      "types": "./dist/*.d.ts",
+      "import": "./dist/*.js"
+    }
+  },
+  "files": [
+    "dist"
+  ],
+  "dependencies": {
+    "@stricli/core": "^1.3.0"
+  },
+  "author": {
+    "name": "David Siewert",
+    "url": "https://david-siewert.com/"
+  },
+  "engines": {
+    "node": ">=22"
+  }
+}
