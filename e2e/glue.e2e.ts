@@ -10,8 +10,14 @@ import { glueListEndpoint } from "../src/glue/endpoint/glueListEndpoint.js"
 import { glueUpdateEndpoint } from "../src/glue/endpoint/glueUpdateEndpoint.js"
 import { porkbunClientCreate } from "../src/shared/porkbunClientCreate.js"
 import { porkbunMockBaseUrl } from "../src/shared/porkbunMockBaseUrl.js"
+import { accountRetryFetch } from "./accountRetryFetch.js"
 
-const created = porkbunClientCreate({ baseUrl: porkbunMockBaseUrl, apiKey: "pk1_mock", secretApiKey: "sk1_mock" })
+const created = porkbunClientCreate({
+  fetch: accountRetryFetch,
+  baseUrl: porkbunMockBaseUrl,
+  apiKey: "pk1_mock",
+  secretApiKey: "sk1_mock",
+})
 if (!created.success) throw new Error(created.errorMessage)
 const client = created.data
 test("live mock validates glueList", async () => {

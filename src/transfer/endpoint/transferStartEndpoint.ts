@@ -3,7 +3,6 @@ import type { PorkbunEndpointInput } from "../../shared/PorkbunEndpointInput.js"
 import type { PorkbunEndpointOutput } from "../../shared/PorkbunEndpointOutput.js"
 import { porkbunEndpointDefine } from "../../shared/porkbunEndpointDefine.js"
 import { porkbunDomainSchema } from "../../shared/schema/porkbunDomainSchema.js"
-import { porkbunDryRunPreviewSchema } from "../../shared/schema/porkbunDryRunPreviewSchema.js"
 export const transferStartEndpoint = porkbunEndpointDefine({
   op: "transferStart",
   method: "POST",
@@ -20,12 +19,12 @@ export const transferStartEndpoint = porkbunEndpointDefine({
         a.description("Release even though the zone is empty. Use only when the domain needs no DNS here."),
       ),
     ),
-    dryRun: a.optional(a.pipe(a.boolean(), a.description("Preview without changing state"))),
   }),
-  responseSchema: a.union([
-    a.looseObject({ status: a.optional(a.string()), domain: a.optional(a.string()), message: a.optional(a.string()) }),
-    porkbunDryRunPreviewSchema,
-  ]),
+  responseSchema: a.looseObject({
+    status: a.optional(a.string()),
+    domain: a.optional(a.string()),
+    message: a.optional(a.string()),
+  }),
 })
 export type TransferStartInput = PorkbunEndpointInput<typeof transferStartEndpoint>
 export type TransferStartResponse = PorkbunEndpointOutput<typeof transferStartEndpoint>

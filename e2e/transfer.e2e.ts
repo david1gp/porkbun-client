@@ -18,8 +18,14 @@ import { transferListEndpoint } from "../src/transfer/endpoint/transferListEndpo
 import { transferPrepareEndpoint } from "../src/transfer/endpoint/transferPrepareEndpoint.js"
 import { transferSetupGetEndpoint } from "../src/transfer/endpoint/transferSetupGetEndpoint.js"
 import { transferStartEndpoint } from "../src/transfer/endpoint/transferStartEndpoint.js"
+import { accountRetryFetch } from "./accountRetryFetch.js"
 
-const created = porkbunClientCreate({ baseUrl: porkbunMockBaseUrl, apiKey: "pk1_mock", secretApiKey: "sk1_mock" })
+const created = porkbunClientCreate({
+  fetch: accountRetryFetch,
+  baseUrl: porkbunMockBaseUrl,
+  apiKey: "pk1_mock",
+  secretApiKey: "sk1_mock",
+})
 if (!created.success) throw new Error(created.errorMessage)
 const client = created.data
 test("live mock validates transferCreate", async () => {

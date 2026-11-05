@@ -8,8 +8,14 @@ import { urlForwardList } from "../src/urlForward/api/urlForwardList.js"
 import { urlForwardCreateEndpoint } from "../src/urlForward/endpoint/urlForwardCreateEndpoint.js"
 import { urlForwardDeleteEndpoint } from "../src/urlForward/endpoint/urlForwardDeleteEndpoint.js"
 import { urlForwardListEndpoint } from "../src/urlForward/endpoint/urlForwardListEndpoint.js"
+import { accountRetryFetch } from "./accountRetryFetch.js"
 
-const created = porkbunClientCreate({ baseUrl: porkbunMockBaseUrl, apiKey: "pk1_mock", secretApiKey: "sk1_mock" })
+const created = porkbunClientCreate({
+  fetch: accountRetryFetch,
+  baseUrl: porkbunMockBaseUrl,
+  apiKey: "pk1_mock",
+  secretApiKey: "sk1_mock",
+})
 if (!created.success) throw new Error(created.errorMessage)
 const client = created.data
 test("live mock validates urlForwardList", async () => {

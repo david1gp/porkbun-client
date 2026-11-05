@@ -20,8 +20,14 @@ import { accountTopupMppEndpoint } from "../src/account/endpoint/accountTopupMpp
 import { porkbunClientCreate } from "../src/shared/porkbunClientCreate.js"
 import { porkbunEndpointCall } from "../src/shared/porkbunEndpointCall.js"
 import { porkbunMockBaseUrl } from "../src/shared/porkbunMockBaseUrl.js"
+import { accountRetryFetch } from "./accountRetryFetch.js"
 
-const clientResult = porkbunClientCreate({ baseUrl: porkbunMockBaseUrl, apiKey: "pk1_mock", secretApiKey: "sk1_mock" })
+const clientResult = porkbunClientCreate({
+  fetch: accountRetryFetch,
+  baseUrl: porkbunMockBaseUrl,
+  apiKey: "pk1_mock",
+  secretApiKey: "sk1_mock",
+})
 if (!clientResult.success) throw new Error(clientResult.errorMessage)
 const client = clientResult.data
 
