@@ -1,15 +1,12 @@
 import { expect, test } from "bun:test"
 import * as a from "valibot"
-import {
-  porkbunClientCreate,
-  porkbunMockBaseUrl,
-  utilityIp,
-  utilityIpEndpoint,
-  utilityPing,
-  utilityPingEndpoint,
-} from "../dist/index.js"
+import { utilityIp } from "../src/utility/api/utilityIp.js"
+import { utilityPing } from "../src/utility/api/utilityPing.js"
+import { utilityIpEndpoint } from "../src/utility/endpoint/utilityIpEndpoint.js"
+import { utilityPingEndpoint } from "../src/utility/endpoint/utilityPingEndpoint.js"
+import { porkbunE2eClientCreate } from "./porkbunE2eClientCreate.js"
 
-const clientResult = porkbunClientCreate({ baseUrl: porkbunMockBaseUrl, apiKey: "pk1_mock", secretApiKey: "sk1_mock" })
+const clientResult = porkbunE2eClientCreate()
 if (!clientResult.success) throw new Error(clientResult.errorMessage)
 const client = clientResult.data
 
