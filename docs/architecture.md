@@ -78,7 +78,14 @@ cliEndpointCommandCreate<E extends PorkbunEndpoint>(
 `TInput` is a synchronous object schema with introspectable `entries` and
 record-shaped input/output. `TResponse` is any synchronous Valibot schema,
 including unions. `TPath` is inferred as a literal. Every `{placeholder}` must
-be an input entry at compile time; make path entries required. Do not manually
+map to a required input entry at compile time. Optional **trailing whole segments**
+use `{name?}` and must map to optional input entries, e.g.
+`path: "/dns/retrieveByNameType/{domain}/{type}/{subdomain?}"` with
+`subdomain: a.optional(a.string())`. Unknown keys, required/optional mismatches,
+embedded optional placeholders, and non-trailing optional segments are rejected
+at compile time. Multiple optional suffix segments are supported, but callers
+cannot supply a later segment while omitting an earlier one (serialization returns
+`INVALID_PATH_PARAMETER`). Do not manually
 annotate an endpoint as the broad `PorkbunEndpoint` type (that erases inference).
 
 ## Implement an endpoint
@@ -127,7 +134,10 @@ credentials** (the upstream API itself also allows credential-free ping).
 
 ### Transport and failure semantics
 
-- Path values are URL-encoded and removed from the payload.
+- Path values are URL-encoded and removed from the payload. Undefined or empty
+  optional path values drop the entire trailing segment **including its leading
+  slash**, not just the placeholder. Optional path fields never become body/query
+  fields. This supports apex DNS records and body-only bulk auto-renew requests.
 - POST sends JSON (at least `{}`); required auth injects `apikey` and
   `secretapikey`. GET uses `X-API-Key` and `X-Secret-API-Key`; public endpoints
   do not automatically send credentials. Remaining fields are query parameters.
@@ -242,8 +252,12 @@ of bad responses, and upstream error code/status propagation. No live fetches in
 `src/**/*.test.ts`. Shared tests already cover generic transport mechanics;
 context tests should focus on their endpoint's actual contract and variants.
 
-Copy `e2e/utility.e2e.ts` to `e2e/<ctx>.e2e.ts`, importing from `../dist/index.js`.
-Use `porkbunMockBaseUrl` and dummy credentials, a timeout, and validate each
+Copy `e2e/utility.e2e.ts` to `e2e/<ctx>.e2e.ts`, using direct `../src/...` imports
+so tests do not depend on barrel wiring/build output. Use
+`porkbunE2eClientCreate` from `e2e/porkbunE2eClientCreate.ts` for the mock URL and
+dummy credentials. This **test-only** transport retries 429/502/503/504 up to four
+times with exponential backoff (or `Retry-After` seconds/HTTP date); production
+transport still never retries. Supply a timeout and validate each
 successful response with its endpoint response schema. Never point automated
 write tests at production. Bun does not discover `.e2e.ts` from a directory
 argument, so `test:e2e` deliberately passes the explicit `./e2e/*.e2e.ts` glob.
@@ -264,3 +278,22 @@ Infra files were copied from lexware; the publish workflow is byte-identical.
 contents. The copied `.gitignore` ignores Bun lockfiles and workspace files;
 the workspace still exists locally. Do not commit from a context agent; let the
 orchestrator group and commit the finished work on main.
+
+### DNS schema details and upstream gaps
+
+Retrieve records use string TTL/priority, while scan/history/diff use integer
+TTL/priority. `dnsHistoryRecordSchema` reuses the matching name/type/content
+entries from `dnsRecordSchema` without widening retrieve's string contract.
+`dnsRecordInputSchema.entries` supplies common create/edit/by-name/import fields;
+individual operations override required fields, type enums, and nullability.
+DNS dry-run responses use the context-local `dnsDryRunResponseSchema`, not the
+paid domain registration preview (which requires cost/operation).
+
+The checked-in v3.73 spec (also checked against the live `/api/json/v3/spec`)
+describes DNS validate-only behavior but does not include DNS 200 `oneOf` preview
+branches or all dry-run inputs. The DNS preview models the documented
+`status`/`dryRun`/`wouldSucceed` envelope additively; response details cannot be
+claimed exhaustive until upstream publishes those schemas. The live mock returns
+404 `MOCK_ENDPOINT_NOT_FOUND` for apex by-name paths both with and without a
+trailing slash, despite the operation's optional-subdomain contract. Offline tests
+cover apex serialization; live tests exercise the supported named-record paths.

@@ -13,16 +13,47 @@ export function porkbunEndpointRequestCreate(
 ): Result<{ url: URL; init: RequestInit }> {
   try {
     const fields: Record<string, unknown> = { ...input }
-    for (const match of endpoint.path.matchAll(/\{([^}]+)\}/g)) {
+    const segments = endpoint.path.split("/")
+    let omitted = false
+    const built: string[] = []
+    for (const segment of segments) {
+      const match = /^\{([^}?]+)(\?)?\}$/.exec(segment)
+      if (!match) {
+        if (omitted)
+          return {
+            ...createResultError(endpoint.op, "Optional path parameters must be trailing"),
+            code: "INVALID_PATH_PARAMETER",
+          }
+        const matches = [...segment.matchAll(/\{([^}]+)\}/g)]
+        for (const placeholder of matches) {
+          const key = placeholder[1]!
+          if (key.endsWith("?") || input[key] === undefined || input[key] === null)
+            return {
+              ...createResultError(endpoint.op, `Missing path parameter: ${key}`),
+              code: "INVALID_PATH_PARAMETER",
+            }
+        }
+        built.push(
+          segment.replace(/\{([^}]+)\}/g, (_match, key: string) => {
+            delete fields[key]
+            return encodeURIComponent(String(input[key]))
+          }),
+        )
+        continue
+      }
       const key = match[1]!
-      if (input[key] === undefined || input[key] === null)
-        return { ...createResultError(endpoint.op, `Missing path parameter: ${key}`), code: "INVALID_PATH_PARAMETER" }
-    }
-    const path = endpoint.path.replace(/\{([^}]+)\}/g, (_match, key: string) => {
+      const optional = match[2] === "?"
       const value = input[key]
       delete fields[key]
-      return encodeURIComponent(String(value))
-    })
+      if (optional && (value === undefined || value === "")) {
+        omitted = true
+        continue
+      }
+      if (value === undefined || value === null || omitted)
+        return { ...createResultError(endpoint.op, `Missing path parameter: ${key}`), code: "INVALID_PATH_PARAMETER" }
+      built.push(encodeURIComponent(String(value)))
+    }
+    const path = built.join("/")
     const url = new URL(`${client.baseUrl}${path}`)
     const headers = new Headers(options.headers)
     headers.set("Accept", "application/json")

@@ -29,3 +29,26 @@ test("endpoint definitions retain their exact schemas and inferred types", () =>
   expect(a.safeParse(endpoint.inputSchema, input).success).toBe(true)
   expect(a.safeParse(endpoint.responseSchema, output).success).toBe(true)
 })
+
+const optionalDefinition = {
+  ...definition,
+  inputSchema: a.object({ domain: a.string(), subdomain: a.optional(a.string()) }),
+}
+porkbunEndpointDefine({ ...optionalDefinition, path: "/{domain}/{subdomain?}" })
+// @ts-expect-error Optional placeholders must exist in the input.
+porkbunEndpointDefine({ ...optionalDefinition, path: "/{missing?}" })
+// @ts-expect-error Optional placeholders must map to optional inputs.
+porkbunEndpointDefine({ ...optionalDefinition, path: "/{domain?}" })
+// @ts-expect-error Required placeholders must map to required inputs.
+porkbunEndpointDefine({ ...optionalDefinition, path: "/{subdomain}" })
+// @ts-expect-error Optional placeholders must be trailing full segments.
+porkbunEndpointDefine({ ...optionalDefinition, path: "/{subdomain?}/{domain}" })
+// @ts-expect-error Optional placeholders cannot be embedded in a segment.
+porkbunEndpointDefine({ ...optionalDefinition, path: "/prefix-{subdomain?}" })
+const multipleOptionalDefinition = {
+  ...definition,
+  inputSchema: a.object({ first: a.optional(a.string()), last: a.optional(a.string()) }),
+}
+porkbunEndpointDefine({ ...multipleOptionalDefinition, path: "/test/{first?}/{last?}" })
+// @ts-expect-error A literal segment cannot follow an optional segment.
+porkbunEndpointDefine({ ...multipleOptionalDefinition, path: "/test/{first?}/literal/{last?}" })
