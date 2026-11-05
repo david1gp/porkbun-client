@@ -17,20 +17,30 @@ import { dnsScanEndpoint } from "./endpoint/dnsScanEndpoint.js"
 
 export const dnsCommand = buildRouteMap({
   routes: {
-    recordList: cliEndpointCommandCreate(dnsRecordListEndpoint),
-    recordGet: cliEndpointCommandCreate(dnsRecordGetEndpoint),
-    recordListByNameType: cliEndpointCommandCreate(dnsRecordListByNameTypeEndpoint),
-    recordCreate: cliEndpointCommandCreate(dnsRecordCreateEndpoint),
-    recordEdit: cliEndpointCommandCreate(dnsRecordEditEndpoint),
-    recordEditByNameType: cliEndpointCommandCreate(dnsRecordEditByNameTypeEndpoint),
-    recordDelete: cliEndpointCommandCreate(dnsRecordDeleteEndpoint),
-    recordDeleteByNameType: cliEndpointCommandCreate(dnsRecordDeleteByNameTypeEndpoint),
     preflight: cliEndpointCommandCreate(dnsPreflightEndpoint),
-    historyList: cliEndpointCommandCreate(dnsHistoryListEndpoint),
-    historyDiff: cliEndpointCommandCreate(dnsHistoryDiffEndpoint),
-    historyRestore: cliEndpointCommandCreate(dnsHistoryRestoreEndpoint),
     scan: cliEndpointCommandCreate(dnsScanEndpoint),
     import: cliEndpointCommandCreate(dnsImportEndpoint),
+    record: buildRouteMap({
+      routes: {
+        list: cliEndpointCommandCreate(dnsRecordListEndpoint),
+        get: cliEndpointCommandCreate(dnsRecordGetEndpoint),
+        listByNameType: cliEndpointCommandCreate(dnsRecordListByNameTypeEndpoint),
+        create: cliEndpointCommandCreate(dnsRecordCreateEndpoint),
+        edit: cliEndpointCommandCreate(dnsRecordEditEndpoint),
+        editByNameType: cliEndpointCommandCreate(dnsRecordEditByNameTypeEndpoint),
+        delete: cliEndpointCommandCreate(dnsRecordDeleteEndpoint),
+        deleteByNameType: cliEndpointCommandCreate(dnsRecordDeleteByNameTypeEndpoint),
+      },
+      docs: { brief: "Manage record" },
+    }),
+    history: buildRouteMap({
+      routes: {
+        list: cliEndpointCommandCreate(dnsHistoryListEndpoint),
+        diff: cliEndpointCommandCreate(dnsHistoryDiffEndpoint),
+        restore: cliEndpointCommandCreate(dnsHistoryRestoreEndpoint),
+      },
+      docs: { brief: "Manage history" },
+    }),
   },
   docs: { brief: "Manage DNS" },
 })

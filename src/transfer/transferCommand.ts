@@ -19,5 +19,5 @@ export const transferCommand = buildRouteMap({
     get: cliEndpointCommandCreate(transferGetEndpoint),
     list: cliEndpointCommandCreate(transferListEndpoint),
   },
-  docs: { brief: "Manage transfer" },
+  docs: { brief: "Manage transfers" },
 })

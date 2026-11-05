@@ -6,9 +6,14 @@ import { dnssecRecordListEndpoint } from "./endpoint/dnssecRecordListEndpoint.js
 
 export const dnssecCommand = buildRouteMap({
   routes: {
-    recordList: cliEndpointCommandCreate(dnssecRecordListEndpoint),
-    recordCreate: cliEndpointCommandCreate(dnssecRecordCreateEndpoint),
-    recordDelete: cliEndpointCommandCreate(dnssecRecordDeleteEndpoint),
+    record: buildRouteMap({
+      routes: {
+        list: cliEndpointCommandCreate(dnssecRecordListEndpoint),
+        create: cliEndpointCommandCreate(dnssecRecordCreateEndpoint),
+        delete: cliEndpointCommandCreate(dnssecRecordDeleteEndpoint),
+      },
+      docs: { brief: "Manage record" },
+    }),
   },
   docs: { brief: "Manage DNSSEC" },
 })

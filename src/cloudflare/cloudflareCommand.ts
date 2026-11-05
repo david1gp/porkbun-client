@@ -20,23 +20,58 @@ import { cloudflareZoneSettingsSetEndpoint } from "./endpoint/cloudflareZoneSett
 
 export const cloudflareCommand = buildRouteMap({
   routes: {
-    getConnection: cliEndpointCommandCreate(cloudflareConnectionGetEndpoint),
-    inventory: cliEndpointCommandCreate(cloudflareInventoryListEndpoint),
     connect: cliEndpointCommandCreate(cloudflareConnectEndpoint),
-    getQueue: cliEndpointCommandCreate(cloudflareQueueListEndpoint),
-    get: cliEndpointCommandCreate(cloudflareMoveGetEndpoint),
-    retry: cliEndpointCommandCreate(cloudflareMoveRetryEndpoint),
-    rollback: cliEndpointCommandCreate(cloudflareMoveRollbackEndpoint),
     disconnect: cliEndpointCommandCreate(cloudflareDisconnectEndpoint),
-    setProxy: cliEndpointCommandCreate(cloudflareProxySetEndpoint),
-    getRecords: cliEndpointCommandCreate(cloudflareRecordListEndpoint),
-    preview: cliEndpointCommandCreate(cloudflareMovePreviewEndpoint),
-    getZone: cliEndpointCommandCreate(cloudflareZoneGetEndpoint),
-    getZoneSettings: cliEndpointCommandCreate(cloudflareZoneSettingsGetEndpoint),
-    setZoneSettings: cliEndpointCommandCreate(cloudflareZoneSettingsSetEndpoint),
-    createRecord: cliEndpointCommandCreate(cloudflareRecordCreateEndpoint),
-    editRecord: cliEndpointCommandCreate(cloudflareRecordEditEndpoint),
-    deleteRecord: cliEndpointCommandCreate(cloudflareRecordDeleteEndpoint),
+    connection: buildRouteMap({
+      routes: {
+        get: cliEndpointCommandCreate(cloudflareConnectionGetEndpoint),
+      },
+      docs: { brief: "Manage connection" },
+    }),
+    inventory: buildRouteMap({
+      routes: {
+        list: cliEndpointCommandCreate(cloudflareInventoryListEndpoint),
+      },
+      docs: { brief: "Manage inventory" },
+    }),
+    queue: buildRouteMap({
+      routes: {
+        list: cliEndpointCommandCreate(cloudflareQueueListEndpoint),
+      },
+      docs: { brief: "Manage queue" },
+    }),
+    move: buildRouteMap({
+      routes: {
+        get: cliEndpointCommandCreate(cloudflareMoveGetEndpoint),
+        retry: cliEndpointCommandCreate(cloudflareMoveRetryEndpoint),
+        rollback: cliEndpointCommandCreate(cloudflareMoveRollbackEndpoint),
+        preview: cliEndpointCommandCreate(cloudflareMovePreviewEndpoint),
+      },
+      docs: { brief: "Manage move" },
+    }),
+    proxy: buildRouteMap({
+      routes: {
+        set: cliEndpointCommandCreate(cloudflareProxySetEndpoint),
+      },
+      docs: { brief: "Manage proxy" },
+    }),
+    record: buildRouteMap({
+      routes: {
+        list: cliEndpointCommandCreate(cloudflareRecordListEndpoint),
+        create: cliEndpointCommandCreate(cloudflareRecordCreateEndpoint),
+        edit: cliEndpointCommandCreate(cloudflareRecordEditEndpoint),
+        delete: cliEndpointCommandCreate(cloudflareRecordDeleteEndpoint),
+      },
+      docs: { brief: "Manage record" },
+    }),
+    zone: buildRouteMap({
+      routes: {
+        get: cliEndpointCommandCreate(cloudflareZoneGetEndpoint),
+        settingsGet: cliEndpointCommandCreate(cloudflareZoneSettingsGetEndpoint),
+        settingsSet: cliEndpointCommandCreate(cloudflareZoneSettingsSetEndpoint),
+      },
+      docs: { brief: "Manage zone" },
+    }),
   },
-  docs: { brief: "Manage cloudflare" },
+  docs: { brief: "Manage Cloudflare" },
 })

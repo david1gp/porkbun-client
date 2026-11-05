@@ -13,7 +13,6 @@ import { webhookTestEndpoint } from "./endpoint/webhookTestEndpoint.js"
 import { webhookUpdateEndpoint } from "./endpoint/webhookUpdateEndpoint.js"
 export const webhookCommand = buildRouteMap({
   routes: {
-    eventTypeList: cliEndpointCommandCreate(webhookEventTypeListEndpoint),
     list: cliEndpointCommandCreate(webhookListEndpoint),
     get: cliEndpointCommandCreate(webhookGetEndpoint),
     create: cliEndpointCommandCreate(webhookCreateEndpoint),
@@ -21,9 +20,20 @@ export const webhookCommand = buildRouteMap({
     secretRotate: cliEndpointCommandCreate(webhookSecretRotateEndpoint),
     test: cliEndpointCommandCreate(webhookTestEndpoint),
     delete: cliEndpointCommandCreate(webhookDeleteEndpoint),
-    deliveryList: cliEndpointCommandCreate(webhookDeliveryListEndpoint),
-    deliveryGet: cliEndpointCommandCreate(webhookDeliveryGetEndpoint),
-    deliveryResend: cliEndpointCommandCreate(webhookDeliveryResendEndpoint),
+    eventType: buildRouteMap({
+      routes: {
+        list: cliEndpointCommandCreate(webhookEventTypeListEndpoint),
+      },
+      docs: { brief: "Manage event type" },
+    }),
+    delivery: buildRouteMap({
+      routes: {
+        list: cliEndpointCommandCreate(webhookDeliveryListEndpoint),
+        get: cliEndpointCommandCreate(webhookDeliveryGetEndpoint),
+        resend: cliEndpointCommandCreate(webhookDeliveryResendEndpoint),
+      },
+      docs: { brief: "Manage delivery" },
+    }),
   },
-  docs: { brief: "Manage webhook" },
+  docs: { brief: "Manage webhooks" },
 })

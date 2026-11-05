@@ -10,14 +10,24 @@ import { emailMailboxSetupEndpoint } from "./endpoint/emailMailboxSetupEndpoint.
 import { emailPasswordSetEndpoint } from "./endpoint/emailPasswordSetEndpoint.js"
 export const emailCommand = buildRouteMap({
   routes: {
-    forwardList: cliEndpointCommandCreate(emailForwardListEndpoint),
-    forwardCreate: cliEndpointCommandCreate(emailForwardCreateEndpoint),
-    forwardDelete: cliEndpointCommandCreate(emailForwardDeleteEndpoint),
-    mailboxList: cliEndpointCommandCreate(emailMailboxListEndpoint),
-    mailboxSetup: cliEndpointCommandCreate(emailMailboxSetupEndpoint),
-    mailboxCreate: cliEndpointCommandCreate(emailMailboxCreateEndpoint),
-    mailboxRenew: cliEndpointCommandCreate(emailMailboxRenewEndpoint),
     passwordSet: cliEndpointCommandCreate(emailPasswordSetEndpoint),
+    forward: buildRouteMap({
+      routes: {
+        list: cliEndpointCommandCreate(emailForwardListEndpoint),
+        create: cliEndpointCommandCreate(emailForwardCreateEndpoint),
+        delete: cliEndpointCommandCreate(emailForwardDeleteEndpoint),
+      },
+      docs: { brief: "Manage forward" },
+    }),
+    mailbox: buildRouteMap({
+      routes: {
+        list: cliEndpointCommandCreate(emailMailboxListEndpoint),
+        setup: cliEndpointCommandCreate(emailMailboxSetupEndpoint),
+        create: cliEndpointCommandCreate(emailMailboxCreateEndpoint),
+        renew: cliEndpointCommandCreate(emailMailboxRenewEndpoint),
+      },
+      docs: { brief: "Manage mailbox" },
+    }),
   },
   docs: { brief: "Manage email" },
 })

@@ -15,14 +15,19 @@ export const linkInBioCommand = buildRouteMap({
   routes: {
     get: cliEndpointCommandCreate(linkInBioGetEndpoint),
     create: cliEndpointCommandCreate(linkInBioCreateEndpoint),
-    updateProfile: cliEndpointCommandCreate(linkInBioProfileUpdateEndpoint),
-    addLink: cliEndpointCommandCreate(linkInBioLinkCreateEndpoint),
-    editLink: cliEndpointCommandCreate(linkInBioLinkEditEndpoint),
-    deleteLink: cliEndpointCommandCreate(linkInBioLinkDeleteEndpoint),
-    reorderLinks: cliEndpointCommandCreate(linkInBioLinkReorderEndpoint),
-    updateSocials: cliEndpointCommandCreate(linkInBioSocialsUpdateEndpoint),
-    updateAppearance: cliEndpointCommandCreate(linkInBioAppearanceUpdateEndpoint),
-    updateSettings: cliEndpointCommandCreate(linkInBioSettingsUpdateEndpoint),
+    profileUpdate: cliEndpointCommandCreate(linkInBioProfileUpdateEndpoint),
+    socialsUpdate: cliEndpointCommandCreate(linkInBioSocialsUpdateEndpoint),
+    appearanceUpdate: cliEndpointCommandCreate(linkInBioAppearanceUpdateEndpoint),
+    settingsUpdate: cliEndpointCommandCreate(linkInBioSettingsUpdateEndpoint),
+    link: buildRouteMap({
+      routes: {
+        create: cliEndpointCommandCreate(linkInBioLinkCreateEndpoint),
+        edit: cliEndpointCommandCreate(linkInBioLinkEditEndpoint),
+        delete: cliEndpointCommandCreate(linkInBioLinkDeleteEndpoint),
+        reorder: cliEndpointCommandCreate(linkInBioLinkReorderEndpoint),
+      },
+      docs: { brief: "Manage link" },
+    }),
   },
-  docs: { brief: "Manage linkInBio" },
+  docs: { brief: "Manage link-in-bio pages" },
 })

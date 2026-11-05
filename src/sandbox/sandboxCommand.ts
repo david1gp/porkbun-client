@@ -8,7 +8,12 @@ export const sandboxCommand = buildRouteMap({
   routes: {
     topup: cliEndpointCommandCreate(sandboxTopupEndpoint),
     reset: cliEndpointCommandCreate(sandboxResetEndpoint),
-    webhookTrigger: cliEndpointCommandCreate(sandboxWebhookTriggerEndpoint),
+    webhook: buildRouteMap({
+      routes: {
+        trigger: cliEndpointCommandCreate(sandboxWebhookTriggerEndpoint),
+      },
+      docs: { brief: "Manage webhooks" },
+    }),
   },
   docs: { brief: "Manage sandbox" },
 })

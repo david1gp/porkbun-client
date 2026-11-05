@@ -56,7 +56,8 @@ test("SSL --out-dir writes the three PEM contents and secures an existing privat
     await cliRun(
       app,
       [
-        "bundle-get",
+        "bundle",
+        "get",
         "--domain",
         "example.com",
         "--out-dir",
@@ -83,7 +84,7 @@ test("SSL --out-dir writes the three PEM contents and secures an existing privat
 
 test("SSL CLI help exposes --out-dir without making a request", async () => {
   const output = processCreate()
-  await cliRun(app, ["bundle-get", "--help"], output.process)
+  await cliRun(app, ["bundle", "get", "--help"], output.process)
   expect(output.stderr()).toBe("")
   expect(JSON.parse(output.stdout())).toMatchObject({ success: true })
   expect(output.stdout()).toContain("--out-dir")

@@ -42,7 +42,7 @@ export const hostingCommand = buildRouteMap({
     delete: cliEndpointCommandCreate(hostingDeleteEndpoint),
     autoRenewUpdate: cliEndpointCommandCreate(hostingAutoRenewUpdateEndpoint),
     phpVersionSet: cliEndpointCommandCreate(hostingPhpVersionSetEndpoint),
-    wordPressVersionSet: cliEndpointCommandCreate(hostingWordPressVersionSetEndpoint),
+    wordpressVersionSet: cliEndpointCommandCreate(hostingWordPressVersionSetEndpoint),
     sslReissue: cliEndpointCommandCreate(hostingSslReissueEndpoint),
     searchVisibilitySet: cliEndpointCommandCreate(hostingSearchVisibilitySetEndpoint),
     file: buildRouteMap({
@@ -52,7 +52,7 @@ export const hostingCommand = buildRouteMap({
         delete: cliEndpointCommandCreate(hostingFileDeleteEndpoint),
         dirCreate: cliEndpointCommandCreate(hostingDirCreateEndpoint),
       },
-      docs: { brief: "Manage file" },
+      docs: { brief: "Manage files" },
     }),
     wpCredential: buildRouteMap({
       routes: {
@@ -60,7 +60,7 @@ export const hostingCommand = buildRouteMap({
         list: cliEndpointCommandCreate(hostingWpCredentialListEndpoint),
         delete: cliEndpointCommandCreate(hostingWpCredentialDeleteEndpoint),
       },
-      docs: { brief: "Manage wpCredential" },
+      docs: { brief: "Manage WordPress credentials" },
     }),
     backup: buildRouteMap({
       routes: {
@@ -69,7 +69,7 @@ export const hostingCommand = buildRouteMap({
         delete: cliEndpointCommandCreate(hostingBackupDeleteEndpoint),
         restore: cliEndpointCommandCreate(hostingBackupRestoreEndpoint),
       },
-      docs: { brief: "Manage backup" },
+      docs: { brief: "Manage backups" },
     }),
     staging: buildRouteMap({
       routes: {

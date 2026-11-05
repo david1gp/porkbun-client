@@ -11,5 +11,5 @@ export const glueCommand = buildRouteMap({
     update: cliEndpointCommandCreate(glueUpdateEndpoint),
     delete: cliEndpointCommandCreate(glueDeleteEndpoint),
   },
-  docs: { brief: "Manage glue" },
+  docs: { brief: "Manage glue records" },
 })

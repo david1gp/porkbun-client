@@ -9,5 +9,5 @@ export const urlForwardCommand = buildRouteMap({
     create: cliEndpointCommandCreate(urlForwardCreateEndpoint),
     delete: cliEndpointCommandCreate(urlForwardDeleteEndpoint),
   },
-  docs: { brief: "Manage urlForward" },
+  docs: { brief: "Manage URL forwards" },
 })

@@ -10,5 +10,5 @@ export const apiKeyCommand = buildRouteMap({
     retrieve: cliEndpointCommandCreate(apiKeyRetrieveEndpoint),
     revoke: cliEndpointCommandCreate(apiKeyRevokeEndpoint),
   },
-  docs: { brief: "Manage apiKey" },
+  docs: { brief: "Manage API keys" },
 })

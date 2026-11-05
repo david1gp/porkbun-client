@@ -22,11 +22,21 @@ export const domainCommand = buildRouteMap({
     list: cliEndpointCommandCreate(domainListEndpoint),
     get: cliEndpointCommandCreate(domainGetEndpoint),
     autoRenewUpdate: cliEndpointCommandCreate(domainAutoRenewUpdateEndpoint),
-    nameserverList: cliEndpointCommandCreate(domainNameserverListEndpoint),
-    nameserverUpdate: cliEndpointCommandCreate(domainNameserverUpdateEndpoint),
-    contactList: cliEndpointCommandCreate(domainContactListEndpoint),
-    contactUpdate: cliEndpointCommandCreate(domainContactUpdateEndpoint),
     registrationRequirementsGet: cliEndpointCommandCreate(domainRegistrationRequirementsGetEndpoint),
+    nameserver: buildRouteMap({
+      routes: {
+        list: cliEndpointCommandCreate(domainNameserverListEndpoint),
+        update: cliEndpointCommandCreate(domainNameserverUpdateEndpoint),
+      },
+      docs: { brief: "Manage nameserver" },
+    }),
+    contact: buildRouteMap({
+      routes: {
+        list: cliEndpointCommandCreate(domainContactListEndpoint),
+        update: cliEndpointCommandCreate(domainContactUpdateEndpoint),
+      },
+      docs: { brief: "Manage contact" },
+    }),
   },
   docs: { brief: "Manage domains" },
 })

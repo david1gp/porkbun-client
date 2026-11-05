@@ -28,15 +28,35 @@ export const accountCommand = buildRouteMap({
     topupCrypto: cliEndpointCommandCreate(accountTopupCryptoEndpoint),
     topupCryptoStatusGet: cliEndpointCommandCreate(accountTopupCryptoStatusGetEndpoint),
     topupMpp: cliEndpointCommandCreate(accountTopupMppEndpoint),
-    inviteCreate: cliEndpointCommandCreate(accountInviteCreateEndpoint),
-    inviteStatusGet: cliEndpointCommandCreate(accountInviteStatusGetEndpoint),
-    invoiceList: cliEndpointCommandCreate(accountInvoiceListEndpoint),
-    invoiceGet: cliEndpointCommandCreate(accountInvoiceGetEndpoint),
-    invoicePdfGet: accountInvoicePdfCommand,
-    phoneVerificationSend: cliEndpointCommandCreate(accountPhoneVerificationSendEndpoint),
-    phoneVerificationConfirm: cliEndpointCommandCreate(accountPhoneVerificationConfirmEndpoint),
-    emailVerificationSend: cliEndpointCommandCreate(accountEmailVerificationSendEndpoint),
-    emailVerificationConfirm: cliEndpointCommandCreate(accountEmailVerificationConfirmEndpoint),
+    invite: buildRouteMap({
+      routes: {
+        create: cliEndpointCommandCreate(accountInviteCreateEndpoint),
+        statusGet: cliEndpointCommandCreate(accountInviteStatusGetEndpoint),
+      },
+      docs: { brief: "Manage invite" },
+    }),
+    invoice: buildRouteMap({
+      routes: {
+        list: cliEndpointCommandCreate(accountInvoiceListEndpoint),
+        get: cliEndpointCommandCreate(accountInvoiceGetEndpoint),
+        pdf: accountInvoicePdfCommand,
+      },
+      docs: { brief: "Manage invoice" },
+    }),
+    phoneVerification: buildRouteMap({
+      routes: {
+        send: cliEndpointCommandCreate(accountPhoneVerificationSendEndpoint),
+        confirm: cliEndpointCommandCreate(accountPhoneVerificationConfirmEndpoint),
+      },
+      docs: { brief: "Manage phone verification" },
+    }),
+    emailVerification: buildRouteMap({
+      routes: {
+        send: cliEndpointCommandCreate(accountEmailVerificationSendEndpoint),
+        confirm: cliEndpointCommandCreate(accountEmailVerificationConfirmEndpoint),
+      },
+      docs: { brief: "Manage email verification" },
+    }),
   },
   docs: { brief: "Manage account" },
 })
